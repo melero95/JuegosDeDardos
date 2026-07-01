@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="blue">#2B41C5</color>
+    <color name="blue_ligth">#00BCD4</color>
+
+    <color name="gold">#FFC107</color>
+    <color name="gold_ligth">#EDBD2D</color>
+    <color name="yellow">#FFEB3B</color>
+
+    <!-- Colores de jugadores -->
+    <color name="jugador_rojo">#F44336</color>
+    <color name="jugador_verde">#4CAF50</color>
+    <color name="jugador_azul">#2196F3</color>
+    <color name="jugador_amarillo">#FFEB3B</color>
+    <color name="jugador_naranja">#FF9800</color>
+    <color name="jugador_morado">#9C27B0</color>
+    <color name="jugador_cyan">#00BCD4</color>
+    <color name="jugador_blanco">#FFFFFF</color>
+
+</resources>

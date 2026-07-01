@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menuEstadisticas"
+        android:icon="@drawable/icono_estadisticas_azul"
+        android:title="Estadísticas" />
+
+    <item
+        android:id="@+id/menuRecords"
+        android:icon="@drawable/icono_top"
+        android:title="Récords" />
+
+    <item
+        android:id="@+id/menuReglas"
+        android:icon="@drawable/icono_reglas"
+        android:title="Reglas de juego" />
+
+    <item
+        android:id="@+id/menuAyuda"
+        android:icon="@drawable/icono_ayuda_azul"
+        android:title="Ayuda" />
+
+    <item
+        android:id="@+id/menuAcercaDe"
+        android:icon="@drawable/icono_informacion_azul"
+        android:title="Acerca de" />
+
+</menu>

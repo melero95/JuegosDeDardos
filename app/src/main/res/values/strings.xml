@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Juegos de dardos</string>
+
+    <!--  Layout main -->
+    <string name="continuar_partida">Continuar partida</string>
+    <string name="nueva_partida">Nueva partida</string>">
+    <string name="historial_partidas">Historial de partidas</string>">
+    <string name="ajustes">Ajustes</string>
+    <string name="titulo_toolbar">Juegos de Dardos</string>
+
+    <!--  clase main -->
+    <string name="abrir_menu">Abrir menú</string>
+    <string name="cerrar_menu">Cerrar menú</string>
+
+    <!--  Layout main -->
+    <!--  Layout main -->
+    <!--  Layout main -->
+    <!--  Layout main -->
+    <!--  Layout main -->
+    <!--  Layout main -->
+
+
+</resources>

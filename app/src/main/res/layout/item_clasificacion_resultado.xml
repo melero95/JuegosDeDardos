@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contenedorItemClasificacion"
+    android:layout_width="match_parent"
+    android:layout_height="46dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="6dp"
+    android:paddingEnd="6dp">
+
+    <TextView
+        android:id="@+id/txtPosicionClasificacion"
+        android:layout_width="42dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="2.º"
+        android:textColor="#FFD54F"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        tools:text="2.º" />
+
+    <TextView
+        android:id="@+id/txtNombreJugadorClasificacion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Nombre del jugador"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Jugador 2" />
+
+    <TextView
+        android:id="@+id/txtPuntosJugadorClasificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:gravity="end"
+        android:minWidth="78dp"
+        android:text="0 puntos"
+        android:textColor="#D9E2EC"
+        android:textSize="15sp"
+        android:visibility="visible"
+        tools:text="120 puntos"
+        tools:visibility="visible" />
+
+</LinearLayout>

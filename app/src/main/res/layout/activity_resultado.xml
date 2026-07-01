@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollResultado"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo"
+    android:fillViewport="true"
+    android:paddingStart="12dp"
+    android:paddingTop="35dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="55dp"
+    tools:context="activities.ResultadoActivity">
+
+    <LinearLayout
+        android:id="@+id/contenedorResultado"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgTrofeo"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="4dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Trofeo del ganador"
+            android:scaleType="fitCenter"
+            android:src="@android:drawable/btn_star_big_on" />
+
+        <TextView
+            android:id="@+id/txtTituloResultado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="RESULTADO DE LA PARTIDA"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/contenedorGanador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/fondo_panel_resultado"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/txtEtiquetaGanador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GANADOR"
+                android:textColor="#FFD54F"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/filaGanador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtNombreGanador"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="Nombre del jugador"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    tools:text="Luis" />
+
+                <TextView
+                    android:id="@+id/txtPuntuacionGanador"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:gravity="center"
+                    android:minWidth="75dp"
+                    android:text="0 puntos"
+                    android:textColor="#FFD54F"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    tools:text="45 puntos"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contenedorClasificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/fondo_panel_resultado"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/txtTituloClasificacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="CLASIFICACIÓN"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="6dp"
+                android:background="#55FFFFFF" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerClasificacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_clasificacion_resultado" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contenedorBotonesResultado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnEstadisticas"
+                style="@style/BotonAccionOscuro"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="VER ESTADÍSTICAS"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnRevancha"
+                style="@style/BotonAccionOscuro"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="7dp"
+                android:text="REVANCHA"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnMenuPrincipal"
+                style="@style/BotonAccionOscuro"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="7dp"
+                android:text="VOLVER AL MENÚ PRINCIPAL"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Multiplicador seleccionado -->
+    <item android:state_checked="true">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="#0B3455" />
+
+            <stroke
+                android:width="2dp"
+                android:color="#168BFF" />
+
+            <corners android:radius="8dp" />
+
+            <padding
+                android:left="2dp"
+                android:top="2dp"
+                android:right="2dp"
+                android:bottom="2dp" />
+
+        </shape>
+
+    </item>
+
+    <!-- Multiplicador no seleccionado -->
+    <item android:state_checked="false">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="#151B20" />
+
+            <stroke
+                android:width="1dp"
+                android:color="#5F6A72" />
+
+            <corners android:radius="8dp" />
+
+            <padding
+                android:left="2dp"
+                android:top="2dp"
+                android:right="2dp"
+                android:bottom="2dp" />
+
+        </shape>
+
+    </item>
+
+</selector>

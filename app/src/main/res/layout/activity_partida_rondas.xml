@@ -1,0 +1,1137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutPartidaRondas"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo"
+    tools:context="activities.PartidaRondasActivity"
+    android:paddingStart="5dp"
+    android:paddingTop="35dp"
+    android:paddingEnd="5dp"
+    android:paddingBottom="55dp">
+
+    <!-- ===================================================== -->
+    <!-- CABECERA -->
+    <!-- ===================================================== -->
+
+    <!-- ===================================================== -->
+    <!-- CABECERA COMPLETA -->
+    <!-- ===================================================== -->
+
+    <LinearLayout
+        android:id="@+id/contenedorCabecera"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- ================================================= -->
+        <!-- MODO DE JUEGO -->
+        <!-- ================================================= -->
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardModoJuego"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="#E6101D35"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#FF168CFF"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp">
+
+                <ImageView
+                    android:id="@+id/imgDardoCabeceraIzquierda"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="Dardo izquierdo"
+                    android:padding="2dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icono_dardo" />
+
+                <TextView
+                    android:id="@+id/txtModoJuego"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:text="DOUBLE DOWN"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/imgDardoCabeceraDerecha"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="Dardo derecho"
+                    android:padding="2dp"
+                    android:rotation="180"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icono_dardo" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ================================================= -->
+        <!-- TURNO DEL JUGADOR ACTUAL -->
+        <!-- ================================================= -->
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardTurnoJugador"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_marginTop="5dp"
+            app:cardBackgroundColor="#E6101D35"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#FF168CFF"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
+
+                <TextView
+                    android:id="@+id/txtEtiquetaTurno"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="TURNO DE:"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtTurnoDe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:text="LUIS"
+                    android:textColor="#168BFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+    <!-- ===================================================== -->
+    <!-- ZONA SUPERIOR DESPLAZABLE -->
+    <!-- ===================================================== -->
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollPartidaRondas"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@id/contenedorBotoneraRondas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contenedorCabecera">
+
+        <LinearLayout
+            android:id="@+id/contenedorContenidoPartida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="8dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="6dp">
+
+            <!-- ================================================= -->
+            <!-- MARCADORES -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:id="@+id/contenedorMarcadores"
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <!-- Columna izquierda -->
+                <LinearLayout
+                    android:id="@+id/columnaJugadoresIzquierda"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingEnd="3dp">
+
+                    <!-- Jugador 1 -->
+                    <LinearLayout
+                        android:id="@+id/tarjetaJugador1"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="1dp">
+
+                        <TextView
+                            android:id="@+id/txtNombreJugador1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="Marcos"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/txtPuntuacionJugador1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="120"
+                            android:textColor="#FFFFFF"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Jugador 2 -->
+                    <LinearLayout
+                        android:id="@+id/tarjetaJugador2"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="1dp">
+
+                        <TextView
+                            android:id="@+id/txtNombreJugador2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="Javier"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/txtPuntuacionJugador2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="95"
+                            android:textColor="#FFFFFF"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Jugador adicional izquierdo -->
+                    <LinearLayout
+                        android:id="@+id/tarjetaJugador5"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="1dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/txtNombreJugador5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="Jugador 5"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/txtPuntuacionJugador5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Jugador actual -->
+                <LinearLayout
+                    android:id="@+id/tarjetaJugadorActual"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="3dp"
+                    android:layout_weight="2.15"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:id="@+id/txtNombreJugadorActual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="Jugador actual"
+                        android:textColor="#168BFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtPuntuacionJugadorActual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="120"
+                        android:textColor="#FFFFFF"
+                        android:textSize="48sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Columna derecha -->
+                <LinearLayout
+                    android:id="@+id/columnaJugadoresDerecha"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="3dp">
+
+                    <!-- Jugador 3 -->
+                    <LinearLayout
+                        android:id="@+id/tarjetaJugador3"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="1dp">
+
+                        <TextView
+                            android:id="@+id/txtNombreJugador3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="Ana"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/txtPuntuacionJugador3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="80"
+                            android:textColor="#FFFFFF"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Jugador 4 -->
+                    <LinearLayout
+                        android:id="@+id/tarjetaJugador4"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="1dp">
+
+                        <TextView
+                            android:id="@+id/txtNombreJugador4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="Sofía"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/txtPuntuacionJugador4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="60"
+                            android:textColor="#FFFFFF"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Jugador adicional derecho -->
+                    <LinearLayout
+                        android:id="@+id/tarjetaJugador6"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="1dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/txtNombreJugador6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="Jugador 6"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/txtPuntuacionJugador6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ================================================= -->
+            <!-- INFORMACIÓN DE LA RONDA -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/panelInformacionRonda"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                app:cardBackgroundColor="#E6102A51"
+                app:cardCornerRadius="3dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#FF168CFF"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <!-- Ronda, dardos y tirada actual -->
+                    <LinearLayout
+                        android:id="@+id/filaInformacionRonda"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <!-- ============================================= -->
+                        <!-- RONDA -->
+                        <!-- ============================================= -->
+
+                        <LinearLayout
+                            android:id="@+id/contenedorRondaActual"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txtTituloRondaActual"
+                                android:layout_width="wrap_content"
+                                android:layout_height="16dp"
+                                android:background="#AA1265CF"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:paddingHorizontal="3dp"
+                                android:text="RONDA"
+                                android:textColor="#FF5FA8FF"
+                                android:textSize="8sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/txtRondaActual"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:text="1"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="23sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/txtMaxRondas"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:text="/15"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="11sp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Separador -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#FF5FA8FF" />
+
+                        <!-- ============================================= -->
+                        <!-- DARDOS -->
+                        <!-- ============================================= -->
+
+                        <LinearLayout
+                            android:id="@+id/contenedorDardos"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3.5"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txtTituloDardos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="16dp"
+                                android:background="#AA1265CF"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:paddingHorizontal="3dp"
+                                android:text="DARDOS"
+                                android:textColor="#FF5FA8FF"
+                                android:textSize="8sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="26dp"
+                                android:layout_marginTop="1dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:id="@+id/imgDardo1"
+                                    android:layout_width="26dp"
+                                    android:layout_height="26dp"
+                                    android:background="#CC101820"
+                                    android:contentDescription="Dardo 1"
+                                    android:padding="4dp"
+                                    android:scaleType="centerInside"
+                                    android:src="@drawable/icono_dardo" />
+
+                                <ImageView
+                                    android:id="@+id/imgDardo2"
+                                    android:layout_width="26dp"
+                                    android:layout_height="26dp"
+                                    android:layout_marginStart="2dp"
+                                    android:alpha="0.35"
+                                    android:background="#CC101820"
+                                    android:contentDescription="Dardo 2"
+                                    android:padding="4dp"
+                                    android:scaleType="centerInside"
+                                    android:src="@drawable/icono_dardo" />
+
+                                <ImageView
+                                    android:id="@+id/imgDardo3"
+                                    android:layout_width="26dp"
+                                    android:layout_height="26dp"
+                                    android:layout_marginStart="2dp"
+                                    android:alpha="0.35"
+                                    android:background="#CC101820"
+                                    android:contentDescription="Dardo 3"
+                                    android:padding="4dp"
+                                    android:scaleType="centerInside"
+                                    android:src="@drawable/icono_dardo" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/txtNumeroDardos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="14dp"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:text="1 / 3"
+                                android:textColor="@android:color/white"
+                                android:textSize="10sp" />
+
+                        </LinearLayout>
+
+                        <!-- Separador -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#FF5FA8FF" />
+
+                        <!-- ============================================= -->
+                        <!-- TIRADA ACTUAL -->
+                        <!-- ============================================= -->
+
+                        <LinearLayout
+                            android:id="@+id/contenedorTiradasRonda"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3.5"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txtTituloTiradasRonda"
+                                android:layout_width="wrap_content"
+                                android:layout_height="16dp"
+                                android:background="#AA1265CF"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:paddingHorizontal="3dp"
+                                android:text="TIRADA ACTUAL"
+                                android:textColor="#FF5FA8FF"
+                                android:textSize="8sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:id="@+id/filaCasillasTiradas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="29dp"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/txtTiradaDardo1"
+                                    android:layout_width="34dp"
+                                    android:layout_height="27dp"
+                                    android:background="@drawable/fondo_casilla_tirada"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:text="T20"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/txtTiradaDardo2"
+                                    android:layout_width="34dp"
+                                    android:layout_height="27dp"
+                                    android:layout_marginStart="2dp"
+                                    android:background="@drawable/fondo_casilla_tirada"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:text="15"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/txtTiradaDardo3"
+                                    android:layout_width="34dp"
+                                    android:layout_height="27dp"
+                                    android:layout_marginStart="2dp"
+                                    android:background="@drawable/fondo_casilla_tirada"
+                                    android:gravity="center"
+                                    android:includeFontPadding="false"
+                                    android:text=""
+                                    android:textColor="@android:color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Botón deshacer -->
+                    <Button
+                        android:id="@+id/btnDeshacerTirada"
+                        style="@style/BotonAccionOscuro"
+                        android:layout_width="match_parent"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="3dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="DESHACER TIRADA"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ================================================= -->
+            <!-- OBJETIVO DE LA RONDA -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:id="@+id/contenedorObjetivoRonda"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="22dp"
+                android:background="@drawable/fondo_casilla_tirada"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:id="@+id/txtTituloObjetivo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OBJETIVO DE LA RONDA"
+                    android:textColor="#168BFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtObjetivoRonda"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:text="15"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ===================================================== -->
+    <!-- ZONA DE BOTONERAS FIJA -->
+    <!-- ===================================================== -->
+
+    <FrameLayout
+        android:id="@+id/contenedorBotoneraRondas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintBottom_toTopOf="@id/contenedorBotonesInferiores"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- ================================================= -->
+        <!-- BOTONERA REDUCIDA -->
+        <!-- Objetivos numéricos concretos y diana -->
+        <!-- ================================================= -->
+
+        <LinearLayout
+            android:id="@+id/contenedorBotoneraReducida"
+            android:layout_width="match_parent"
+            android:layout_height="104dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <!-- Primera fila -->
+            <LinearLayout
+                android:id="@+id/filaBotoneraReducida1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnFueraRonda"
+                    style="@style/BotonFuera"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:text="FUERA / 0" />
+
+                <Button
+                    android:id="@+id/btnSimpleRonda"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:text="SIMPLE" />
+
+            </LinearLayout>
+
+            <!-- Segunda fila -->
+            <LinearLayout
+                android:id="@+id/filaBotoneraReducida2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnDobleRonda"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:text="DOBLE" />
+
+                <Button
+                    android:id="@+id/btnTripleRonda"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_weight="1"
+                    android:text="TRIPLE" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ================================================= -->
+        <!-- BOTONERA COMPLETA -->
+        <!-- Rondas de cualquier doble o cualquier triple -->
+        <!-- ================================================= -->
+
+        <LinearLayout
+            android:id="@+id/contenedorBotoneraCompleta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <!-- Botón para registrar un fallo -->
+            <Button
+                android:id="@+id/btnFueraNumerico"
+                style="@style/BotonFuera"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="FUERA / 0" />
+
+            <!-- Bull, 20, 19, 18, 17, 16, 15 -->
+            <LinearLayout
+                android:id="@+id/filaPuntuaciones1"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnBull"
+                    style="@style/BotonPuntuacionBull"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1.15"
+                    android:text="BULL" />
+
+                <Button
+                    android:id="@+id/btn20"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="20" />
+
+                <Button
+                    android:id="@+id/btn19"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="19" />
+
+                <Button
+                    android:id="@+id/btn18"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="18" />
+
+                <Button
+                    android:id="@+id/btn17"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="17" />
+
+                <Button
+                    android:id="@+id/btn16"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="16" />
+
+                <Button
+                    android:id="@+id/btn15"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="15" />
+
+            </LinearLayout>
+
+            <!-- 14, 13, 12, 11, 10, 9, 8 -->
+            <LinearLayout
+                android:id="@+id/filaPuntuaciones2"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn14"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="14" />
+
+                <Button
+                    android:id="@+id/btn13"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="13" />
+
+                <Button
+                    android:id="@+id/btn12"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="12" />
+
+                <Button
+                    android:id="@+id/btn11"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="11" />
+
+                <Button
+                    android:id="@+id/btn10"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="10" />
+
+                <Button
+                    android:id="@+id/btn9"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="9" />
+
+                <Button
+                    android:id="@+id/btn8"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="8" />
+
+            </LinearLayout>
+
+            <!-- 7, 6, 5, 4, 3, 2, 1 -->
+            <LinearLayout
+                android:id="@+id/filaPuntuaciones3"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn7"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="7" />
+
+                <Button
+                    android:id="@+id/btn6"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="6" />
+
+                <Button
+                    android:id="@+id/btn5"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="5" />
+
+                <Button
+                    android:id="@+id/btn4"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="4" />
+
+                <Button
+                    android:id="@+id/btn3"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="3" />
+
+                <Button
+                    android:id="@+id/btn2"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="2" />
+
+                <Button
+                    android:id="@+id/btn1"
+                    style="@style/BotonPuntuacion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_weight="1"
+                    android:text="1" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- ===================================================== -->
+    <!-- BOTONES INFERIORES FIJOS -->
+    <!-- ===================================================== -->
+
+    <LinearLayout
+        android:id="@+id/contenedorBotonesInferiores"
+        android:layout_width="0dp"
+        android:layout_height="62dp"
+        android:background="@color/blue"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnVerMarcador"
+            style="@style/BotonAccionOscuro"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1.15"
+            android:text="VER MARCADOR"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnSiguienteTurno"
+            style="@style/BotonAccionVerde"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="3dp"
+            android:layout_weight="1.25"
+            android:text="SIGUIENTE TURNO"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnSalirPartida"
+            style="@style/BotonAccionRojo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="3dp"
+            android:layout_weight="1.15"
+            android:text="SALIR PARTIDA"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

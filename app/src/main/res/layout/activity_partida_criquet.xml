@@ -1,0 +1,990 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contenedorPrincipalCricket"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo"
+    android:paddingStart="5dp"
+    android:paddingTop="35dp"
+    android:paddingEnd="5dp"
+    android:paddingBottom="55dp">
+
+
+    <!-- ====================================================== -->
+    <!-- CABECERA: MODO DE JUEGO                                -->
+    <!-- ====================================================== -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardModoJuego"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        app:cardBackgroundColor="#E6101D35"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#FF168CFF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cardTurnoJugador"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgDardoCabeceraIzquierda"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:contentDescription="Dardo izquierdo"
+                android:padding="2dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icono_dardo" />
+
+            <TextView
+                android:id="@+id/txtModoJuego"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="CRICKET"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/imgDardoCabeceraDerecha"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:contentDescription="Dardo derecho"
+                android:padding="2dp"
+                android:rotation="180"
+                android:scaleType="centerInside"
+                android:src="@drawable/icono_dardo" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- ====================================================== -->
+    <!-- CABECERA: TURNO DEL JUGADOR                            -->
+    <!-- ====================================================== -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardTurnoJugador"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:cardBackgroundColor="#E6101D35"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#FF168CFF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/cardModoJuego"
+        app:layout_constraintBottom_toTopOf="@id/cardMarcadorCricket"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtEtiquetaTurno"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="TURNO DE:"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtJugadorActual"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="LUIS"
+                android:textColor="#FF299FFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- ====================================================== -->
+    <!-- MARCADOR DE CRICKET                                    -->
+    <!-- ====================================================== -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardMarcadorCricket"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#EE112D57"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#FF168CFF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/cardTurnoJugador"
+        app:layout_constraintBottom_toTopOf="@id/cardInformacionTirada"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="3dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="3dp"
+            android:paddingBottom="2dp">
+
+            <TextView
+                android:id="@+id/txtTituloMarcador"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="MARCADOR"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/contenedorMarcadorCricket"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+
+                <!-- JUGADOR 1 -->
+
+                <LinearLayout
+                    android:id="@+id/columnaJugador1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtNombreJugador1"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="LUIS"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtJ1Marca20"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ1Marca19"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ1Marca18"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ1Marca17"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ1Marca16"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ1Marca15"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ1MarcaDiana"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtPuntosJugador1"
+                        style="@style/TextoPuntosCricketCompacto"
+                        android:text="0 PTS" />
+
+                </LinearLayout>
+
+
+                <!-- JUGADOR 2 -->
+
+                <LinearLayout
+                    android:id="@+id/columnaJugador2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtNombreJugador2"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="ANA"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtJ2Marca20"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ2Marca19"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ2Marca18"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ2Marca17"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ2Marca16"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ2Marca15"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ2MarcaDiana"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtPuntosJugador2"
+                        style="@style/TextoPuntosCricketCompacto"
+                        android:text="0 PTS" />
+
+                </LinearLayout>
+
+
+                <!-- OBJETIVOS -->
+
+                <LinearLayout
+                    android:id="@+id/columnaObjetivos"
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:background="#88115EB3"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtTituloObjetivos"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="OBJ."
+                        android:textColor="#FF58A9F5"
+                        android:textSize="8sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivo20"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="20" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivo19"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="19" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivo18"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="18" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivo17"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="17" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivo16"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="16" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivo15"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="15" />
+
+                    <TextView
+                        android:id="@+id/txtObjetivoDiana"
+                        style="@style/TextoObjetivoCricketCompacto"
+                        android:text="D" />
+
+                    <TextView
+                        android:id="@+id/txtTituloPuntos"
+                        android:layout_width="match_parent"
+                        android:layout_height="27dp"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="PTS"
+                        android:textColor="#FF58A9F5"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- JUGADOR 3 -->
+
+                <LinearLayout
+                    android:id="@+id/columnaJugador3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtNombreJugador3"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="PEDRO"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtJ3Marca20"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ3Marca19"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ3Marca18"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ3Marca17"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ3Marca16"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ3Marca15"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ3MarcaDiana"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtPuntosJugador3"
+                        style="@style/TextoPuntosCricketCompacto"
+                        android:text="0 PTS" />
+
+                </LinearLayout>
+
+
+                <!-- JUGADOR 4 -->
+
+                <LinearLayout
+                    android:id="@+id/columnaJugador4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtNombreJugador4"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="MARTA"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtJ4Marca20"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ4Marca19"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ4Marca18"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ4Marca17"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ4Marca16"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ4Marca15"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtJ4MarcaDiana"
+                        style="@style/TextoMarcaCricketCompacto"
+                        android:text="○ ○ ○" />
+
+                    <TextView
+                        android:id="@+id/txtPuntosJugador4"
+                        style="@style/TextoPuntosCricketCompacto"
+                        android:text="0 PTS" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- ====================================================== -->
+    <!-- INFORMACIÓN DE LA TIRADA                               -->
+    <!-- ====================================================== -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardInformacionTirada"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#E6102A51"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#FF168CFF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/cardMarcadorCricket"
+        app:layout_constraintBottom_toTopOf="@id/filaMultiplicadores"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="3dp">
+
+            <LinearLayout
+                android:id="@+id/filaInformacionTirada"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+
+                <!-- RONDA -->
+
+                <LinearLayout
+                    android:id="@+id/bloqueRonda"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="16dp"
+                        android:background="#AA1265CF"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingHorizontal="3dp"
+                        android:text="RONDA"
+                        android:textColor="#FF5FA8FF"
+                        android:textSize="8sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txtRondaActual"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="1"
+                            android:textColor="@android:color/white"
+                            android:textSize="23sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtMaxRondas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="/9"
+                            android:textColor="@android:color/white"
+                            android:textSize="11sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#FF5FA8FF" />
+
+
+                <!-- DARDOS -->
+
+                <LinearLayout
+                    android:id="@+id/bloqueDardos"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3.5"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="16dp"
+                        android:background="#AA1265CF"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingHorizontal="3dp"
+                        android:text="DARDOS"
+                        android:textColor="#FF5FA8FF"
+                        android:textSize="8sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="26dp"
+                        android:layout_marginTop="1dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/imgDardo1"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:background="#CC101820"
+                            android:contentDescription="Dardo 1"
+                            android:padding="4dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/icono_dardo" />
+
+                        <ImageView
+                            android:id="@+id/imgDardo2"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_marginStart="2dp"
+                            android:background="#CC101820"
+                            android:contentDescription="Dardo 2"
+                            android:padding="4dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/icono_dardo" />
+
+                        <ImageView
+                            android:id="@+id/imgDardo3"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_marginStart="2dp"
+                            android:background="#CC101820"
+                            android:contentDescription="Dardo 3"
+                            android:padding="4dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/icono_dardo" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/txtNumeroDardo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="14dp"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="1 / 3"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#FF5FA8FF" />
+
+
+                <!-- TIRADA ACTUAL -->
+
+                <LinearLayout
+                    android:id="@+id/bloqueTiradaActual"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3.5"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="16dp"
+                        android:background="#AA1265CF"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingHorizontal="3dp"
+                        android:text="TIRADA ACTUAL"
+                        android:textColor="#FF5FA8FF"
+                        android:textSize="8sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="29dp"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txtTirada1"
+                            style="@style/CasillaTiradaActualCompacta"
+                            android:text="T15" />
+
+                        <TextView
+                            android:id="@+id/txtTirada2"
+                            style="@style/CasillaTiradaActualCompacta"
+                            android:layout_marginStart="2dp" />
+
+                        <TextView
+                            android:id="@+id/txtTirada3"
+                            style="@style/CasillaTiradaActualCompacta"
+                            android:layout_marginStart="2dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDeshacerTirada"
+                style="@style/BotonAccionOscuro"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_marginTop="3dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="DESHACER TIRADA"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- ====================================================== -->
+    <!-- FUERA Y MULTIPLICADORES                                -->
+    <!-- ====================================================== -->
+
+    <LinearLayout
+        android:id="@+id/filaMultiplicadores"
+        android:layout_width="0dp"
+        android:layout_height="38dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        app:layout_constraintTop_toBottomOf="@id/cardInformacionTirada"
+        app:layout_constraintBottom_toTopOf="@id/contenedorBotonesCricket"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnFuera"
+            style="@style/BotonFuera"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="FUERA"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnX1"
+            style="@style/MultiplicadorPartida"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="2dp"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="X1"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnX2"
+            style="@style/MultiplicadorPartida"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="2dp"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="X2"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnX3"
+            style="@style/MultiplicadorPartida"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="X3"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+
+    <!-- ====================================================== -->
+    <!-- BOTONERA CRICKET                                       -->
+    <!-- ====================================================== -->
+
+    <LinearLayout
+        android:id="@+id/contenedorBotonesCricket"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/filaMultiplicadores"
+        app:layout_constraintBottom_toTopOf="@id/cardBotonesInferiores"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!-- FILA 15 - 16 - 17 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/btnObjetivo15"
+                style="@style/BotonPuntuacion"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:text="15" />
+
+            <Button
+                android:id="@+id/btnObjetivo16"
+                style="@style/BotonPuntuacion"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="2dp"
+                android:layout_weight="1"
+                android:text="16" />
+
+            <Button
+                android:id="@+id/btnObjetivo17"
+                style="@style/BotonPuntuacion"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                android:text="17" />
+
+        </LinearLayout>
+
+
+        <!-- FILA 18 - 19 - 20 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/btnObjetivo18"
+                style="@style/BotonPuntuacion"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:text="18" />
+
+            <Button
+                android:id="@+id/btnObjetivo19"
+                style="@style/BotonPuntuacion"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="2dp"
+                android:layout_weight="1"
+                android:text="19" />
+
+            <Button
+                android:id="@+id/btnObjetivo20"
+                style="@style/BotonPuntuacion"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                android:text="20" />
+
+        </LinearLayout>
+
+
+        <!-- FILA DIANA -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnObjetivoDiana"
+                style="@style/BotonPuntuacion"
+                android:layout_width="130dp"
+                android:layout_height="match_parent"
+                android:text="DIANA" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <!-- ====================================================== -->
+    <!-- BOTONES INFERIORES                                     -->
+    <!-- ====================================================== -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardBotonesInferiores"
+        android:layout_width="0dp"
+        android:layout_height="46dp"
+        app:cardBackgroundColor="#DD10264A"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#FF698ED8"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/contenedorBotonesCricket"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/filaBotonesInferiores"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="3dp"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/btnVerMarcador"
+                style="@style/BotonAccionOscuro"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="VER MARCADOR"
+                android:textSize="9sp" />
+
+            <Button
+                android:id="@+id/btnSiguienteTurno"
+                style="@style/BotonAccionVerde"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="2dp"
+                android:layout_weight="1"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="SIGUIENTE TURNO"
+                android:textSize="9sp" />
+
+            <Button
+                android:id="@+id/btnSalirPartida"
+                style="@style/BotonAccionRojo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="SALIR PARTIDA"
+                android:textSize="9sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

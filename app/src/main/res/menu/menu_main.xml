@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_estadisticas"
+        android:title="Estadísticas"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_ayuda"
+        android:title="Ayuda"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_acerca_de"
+        android:title="Acerca de"
+        app:showAsAction="never" />
+
+</menu>
