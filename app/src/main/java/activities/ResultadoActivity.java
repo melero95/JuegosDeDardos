@@ -3,6 +3,7 @@ package activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +23,8 @@ import modelos.ResultadoJugador;
 
 public class ResultadoActivity extends AppCompatActivity {
 
-    //Claves del Intent --------------------
+    //Claves del Intent ------------------------------------------------------------
+
     public static final String EXTRA_MODO_JUEGO =
             "resultado_modo_juego";
 
@@ -56,7 +58,8 @@ public class ResultadoActivity extends AppCompatActivity {
     public static final String EXTRA_INDICES_ORIGINALES =
             "resultado_indices_originales";
 
-    //Datos generales recibidos --------------------
+    //Datos generales recibidos ----------------------------------------------------
+
     private String modoJuego;
     private String motivoFinalizacion;
     private String nombreGanador;
@@ -65,20 +68,23 @@ public class ResultadoActivity extends AppCompatActivity {
     private int rondasJugadas;
     private int maxRondas;
 
-    //Listas recibidas --------------------
+    //Listas recibidas -------------------------------------------------------------
+
     private ArrayList<String> nombresJugadores;
     private ArrayList<Integer> puntuacionesJugadores;
     private ArrayList<Integer> coloresJugadores;
     private ArrayList<Integer> posicionesJugadores;
     private ArrayList<Integer> indicesOriginales;
 
-    //Datos preparados para la pantalla --------------------
+    //Datos preparados para la pantalla --------------------------------------------
+
     private ArrayList<ResultadoJugador> jugadoresResultado;
     private ArrayList<ResultadoJugador> jugadoresClasificacion;
 
     private ResultadoJugador jugadorGanador;
 
-    //Elementos principales --------------------
+    //Elementos principales --------------------------------------------------------
+
     private ImageView imgTrofeo;
 
     private TextView txtTituloResultado;
@@ -97,10 +103,12 @@ public class ResultadoActivity extends AppCompatActivity {
     private Button btnRevancha;
     private Button btnMenuPrincipal;
 
-    //Adaptador --------------------
+    //Adaptador --------------------------------------------------------------------
+
     private ClasificacionResultadoAdapter clasificacionAdapter;
 
-    //Crear Activity --------------------
+    //Crear Activity ---------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,9 +127,13 @@ public class ResultadoActivity extends AppCompatActivity {
         prepararRecyclerView();
         configurarListeners();
         actualizarPantalla();
+
+        //Ejecutar la animación cuando ya se han cargado los datos
+        mostrarAnimacionResultado();
     }
 
-    //Iniciar elementos --------------------
+    //Iniciar elementos ------------------------------------------------------------
+
     private void iniciarElementos() {
 
         imgTrofeo = findViewById(
@@ -177,7 +189,8 @@ public class ResultadoActivity extends AppCompatActivity {
         );
     }
 
-    //Recibir datos del Intent --------------------
+    //Recibir datos del Intent ------------------------------------------------------
+
     private void recibirDatosIntent() {
 
         Intent intent = getIntent();
@@ -242,7 +255,8 @@ public class ResultadoActivity extends AppCompatActivity {
         corregirDatosNulos();
     }
 
-    //Inicializar datos vacíos --------------------
+    //Inicializar datos vacíos ------------------------------------------------------
+
     private void inicializarDatosVacios() {
 
         modoJuego = "";
@@ -263,7 +277,8 @@ public class ResultadoActivity extends AppCompatActivity {
         jugadoresClasificacion = new ArrayList<>();
     }
 
-    //Corregir valores nulos --------------------
+    //Corregir valores nulos --------------------------------------------------------
+
     private void corregirDatosNulos() {
 
         if (modoJuego == null) {
@@ -299,7 +314,8 @@ public class ResultadoActivity extends AppCompatActivity {
         }
     }
 
-    //Validar datos recibidos --------------------
+    //Validar datos recibidos -------------------------------------------------------
+
     private boolean validarDatosRecibidos() {
 
         if (nombresJugadores.isEmpty()) {
@@ -343,7 +359,8 @@ public class ResultadoActivity extends AppCompatActivity {
         return true;
     }
 
-    //Preparar objetos ResultadoJugador --------------------
+    //Preparar objetos ResultadoJugador --------------------------------------------
+
     private void prepararDatosResultado() {
 
         jugadoresResultado = new ArrayList<>();
@@ -413,7 +430,8 @@ public class ResultadoActivity extends AppCompatActivity {
         }
     }
 
-    //Preparar RecyclerView --------------------
+    //Preparar RecyclerView ---------------------------------------------------------
+
     private void prepararRecyclerView() {
 
         recyclerClasificacion.setLayoutManager(
@@ -434,7 +452,8 @@ public class ResultadoActivity extends AppCompatActivity {
         );
     }
 
-    //Actualizar pantalla completa --------------------
+    //Actualizar pantalla completa -------------------------------------------------
+
     private void actualizarPantalla() {
 
         actualizarTitulo();
@@ -443,7 +462,8 @@ public class ResultadoActivity extends AppCompatActivity {
         actualizarBotones();
     }
 
-    //Actualizar título --------------------
+    //Actualizar título -------------------------------------------------------------
+
     private void actualizarTitulo() {
 
         if (modoJuego.trim().isEmpty()) {
@@ -461,7 +481,8 @@ public class ResultadoActivity extends AppCompatActivity {
         }
     }
 
-    //Actualizar ganador --------------------
+    //Actualizar ganador ------------------------------------------------------------
+
     private void actualizarGanador() {
 
         if (jugadorGanador == null) {
@@ -500,7 +521,8 @@ public class ResultadoActivity extends AppCompatActivity {
         }
     }
 
-    //Actualizar clasificación --------------------
+    //Actualizar clasificación -----------------------------------------------------
+
     private void actualizarClasificacion() {
 
         if (jugadoresClasificacion.isEmpty()) {
@@ -516,11 +538,11 @@ public class ResultadoActivity extends AppCompatActivity {
                 View.VISIBLE
         );
 
-        //La lista ya fue entregada al adaptador
         clasificacionAdapter.notifyDataSetChanged();
     }
 
-    //Actualizar botones --------------------
+    //Actualizar botones ------------------------------------------------------------
+
     private void actualizarBotones() {
 
         boolean hayResultados =
@@ -535,7 +557,95 @@ public class ResultadoActivity extends AppCompatActivity {
         );
     }
 
-    //Configurar botones --------------------
+//Mostrar animación del resultado ----------------------------------------------
+
+    private void mostrarAnimacionResultado() {
+
+        //Estado inicial del trofeo
+        imgTrofeo.setScaleX(0f);
+        imgTrofeo.setScaleY(0f);
+        imgTrofeo.setAlpha(0f);
+
+        //Estado inicial de la información del ganador
+        filaGanador.setAlpha(0f);
+        filaGanador.setTranslationY(30f);
+
+        //Estado inicial de la clasificación
+        contenedorClasificacion.setAlpha(0f);
+        contenedorClasificacion.setTranslationY(30f);
+
+        //Estado inicial de los botones
+        contenedorBotonesResultado.setAlpha(0f);
+        contenedorBotonesResultado.setTranslationY(30f);
+
+        //Animación del trofeo
+        imgTrofeo.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(1200)
+                .setInterpolator(
+                        new DecelerateInterpolator()
+                )
+                .withEndAction(() -> {
+
+                    //Después aparece el ganador
+                    filaGanador.animate()
+                            .alpha(1f)
+                            .translationY(0f)
+                            .setDuration(800)
+                            .setInterpolator(
+                                    new DecelerateInterpolator()
+                            )
+                            .withEndAction(
+                                    this::mostrarClasificacionAnimada
+                            )
+                            .start();
+                })
+                .start();
+    }
+
+//Mostrar clasificación y botones de forma animada -----------------------------
+
+    private void mostrarClasificacionAnimada() {
+
+        if (contenedorClasificacion.getVisibility()
+                == View.VISIBLE) {
+
+            contenedorClasificacion.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(700)
+                    .setInterpolator(
+                            new DecelerateInterpolator()
+                    )
+                    .withEndAction(
+                            this::mostrarBotonesAnimados
+                    )
+                    .start();
+
+        } else {
+
+            mostrarBotonesAnimados();
+        }
+    }
+
+//Mostrar botones de forma animada ---------------------------------------------
+
+    private void mostrarBotonesAnimados() {
+
+        contenedorBotonesResultado.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(700)
+                .setInterpolator(
+                        new DecelerateInterpolator()
+                )
+                .start();
+    }
+
+    //Configurar botones ------------------------------------------------------------
+
     private void configurarListeners() {
 
         btnEstadisticas.setOnClickListener(
@@ -551,7 +661,8 @@ public class ResultadoActivity extends AppCompatActivity {
         );
     }
 
-    //Abrir estadísticas --------------------
+    //Abrir estadísticas ------------------------------------------------------------
+
     private void abrirEstadisticas() {
 
         Toast.makeText(
@@ -561,7 +672,8 @@ public class ResultadoActivity extends AppCompatActivity {
         ).show();
     }
 
-    //Realizar revancha --------------------
+    //Realizar revancha -------------------------------------------------------------
+
     private void realizarRevancha() {
 
         Toast.makeText(
@@ -571,7 +683,8 @@ public class ResultadoActivity extends AppCompatActivity {
         ).show();
     }
 
-    //Mostrar error al recibir datos --------------------
+    //Mostrar error al recibir datos ------------------------------------------------
+
     private void mostrarErrorDatos() {
 
         Toast.makeText(
@@ -583,7 +696,8 @@ public class ResultadoActivity extends AppCompatActivity {
         volverMenuPrincipal();
     }
 
-    //Volver al menú principal --------------------
+    //Volver al menú principal ------------------------------------------------------
+
     private void volverMenuPrincipal() {
 
         Intent intent = new Intent(
@@ -601,9 +715,11 @@ public class ResultadoActivity extends AppCompatActivity {
         finish();
     }
 
-    //Evitar regresar a una partida terminada --------------------
+    //Evitar regresar a una partida terminada --------------------------------------
+
     @Override
     public void onBackPressed() {
+
         super.onBackPressed();
         volverMenuPrincipal();
     }

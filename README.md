@@ -137,4 +137,4 @@ Cada nueva funcionalidad se implementa, prueba y documenta antes de continuar co
 
 ## Autor
 
-Proyecto desarrollado por Luis como aplicación Android y proyecto académico.
+Proyecto desarrollado por Luis Melero como aplicación Android y proyecto académico.

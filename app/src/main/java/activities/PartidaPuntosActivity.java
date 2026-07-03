@@ -10,6 +10,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+import androidx.activity.OnBackPressedCallback;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -174,12 +175,18 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Configuro que la parete superior sea del mismo color
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.blue));
+
         setContentView(R.layout.activity_partida_puntos);
 
         inicializarVistas();
         recibirDatosPartida();
         prepararPartida();
         configurarListeners();
+        configurarBotonAtras();
         actualizarInterfazCompleta();
     }
 
@@ -1476,5 +1483,22 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         startActivity(intent);
         finish();
+    }
+
+    //Control del botón atrás ---------------------------------------------------------
+
+    private void configurarBotonAtras() {
+
+        getOnBackPressedDispatcher().addCallback(
+                this,
+                new OnBackPressedCallback(true) {
+
+                    @Override
+                    public void handleOnBackPressed() {
+
+                        mostrarDialogoSalirPartida();
+                    }
+                }
+        );
     }
 }

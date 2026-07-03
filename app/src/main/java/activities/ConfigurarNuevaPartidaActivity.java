@@ -89,6 +89,12 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Configuro que la parete superior sea del mismo color
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.blue));
+
+
         setContentView(R.layout.activity_nueva_partida);
 
         inicializarComponentes();

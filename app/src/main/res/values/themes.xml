@@ -1,13 +1,30 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
 
     <style name="Base.Theme.JuegosDeDardos"
         parent="Theme.Material3.DayNight.NoActionBar">
 
-        <!-- Color principal -->
+        <!-- Color principal de la aplicación -->
         <item name="colorPrimary">@color/blue</item>
 
-        <!-- Barra de estado (franja superior) -->
+        <!-- Permite colorear las barras del sistema -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!-- Barra de estado superior -->
         <item name="android:statusBarColor">@color/blue</item>
+
+        <!-- Barra de navegación inferior -->
+        <item name="android:navigationBarColor">@color/blue</item>
+
+        <!-- Evita una línea divisoria de otro color -->
+        <item name="android:navigationBarDividerColor">@color/blue</item>
+
+        <!-- Iconos claros en la barra superior -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Iconos claros en la barra inferior -->
+        <item name="android:windowLightNavigationBar">false</item>
 
     </style>
 
