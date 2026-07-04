@@ -68,7 +68,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     //Constantes generales --------------------------------------------------------
 
     private static final int MAX_DARDOS_TURNO = 3;
-    private static final int MAX_JUGADORES = 4;
+    private static final int MAX_JUGADORES = 6;
 
     //Configuración de la partida -------------------------------------------------
 
@@ -172,6 +172,10 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private final Button[] botonesPuntuacion =
             new Button[20];
 
+    //Control de animación del cambio de turno --------------------------------------
+
+    private boolean animacionCambioTurnoActiva = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -216,34 +220,71 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionJugadorActual =
                 findViewById(R.id.txtPuntuacionJugadorActual);
 
-        panelesJugadores[0] = findViewById(R.id.tarjetaJugador1);
-        panelesJugadores[1] = findViewById(R.id.tarjetaJugador2);
-        panelesJugadores[2] = findViewById(R.id.tarjetaJugador3);
-        panelesJugadores[3] = findViewById(R.id.tarjetaJugador4);
+        //Jugador 1: columna izquierda, primera posición --------------------
+
+        panelesJugadores[0] =
+                findViewById(R.id.tarjetaJugador1);
 
         txtNombresJugadores[0] =
                 findViewById(R.id.txtNombreJugador1);
 
+        txtPuntuacionesJugadores[0] =
+                findViewById(R.id.txtPuntuacionJugador1);
+
+        //Jugador 2: columna derecha, primera posición --------------------
+
+        panelesJugadores[1] =
+                findViewById(R.id.tarjetaJugador3);
+
         txtNombresJugadores[1] =
-                findViewById(R.id.txtNombreJugador2);
+                findViewById(R.id.txtNombreJugador3);
+
+        txtPuntuacionesJugadores[1] =
+                findViewById(R.id.txtPuntuacionJugador3);
+
+        //Jugador 3: columna izquierda, segunda posición --------------------
+
+        panelesJugadores[2] =
+                findViewById(R.id.tarjetaJugador2);
 
         txtNombresJugadores[2] =
-                findViewById(R.id.txtNombreJugador3);
+                findViewById(R.id.txtNombreJugador2);
+
+        txtPuntuacionesJugadores[2] =
+                findViewById(R.id.txtPuntuacionJugador2);
+
+        //Jugador 4: columna derecha, segunda posición --------------------
+
+        panelesJugadores[3] =
+                findViewById(R.id.tarjetaJugador4);
 
         txtNombresJugadores[3] =
                 findViewById(R.id.txtNombreJugador4);
 
-        txtPuntuacionesJugadores[0] =
-                findViewById(R.id.txtPuntuacionJugador1);
-
-        txtPuntuacionesJugadores[1] =
-                findViewById(R.id.txtPuntuacionJugador2);
-
-        txtPuntuacionesJugadores[2] =
-                findViewById(R.id.txtPuntuacionJugador3);
-
         txtPuntuacionesJugadores[3] =
                 findViewById(R.id.txtPuntuacionJugador4);
+
+        //Jugador 5: columna izquierda, tercera posición --------------------
+
+        panelesJugadores[4] =
+                findViewById(R.id.tarjetaJugador5);
+
+        txtNombresJugadores[4] =
+                findViewById(R.id.txtNombreJugador5);
+
+        txtPuntuacionesJugadores[4] =
+                findViewById(R.id.txtPuntuacionJugador5);
+
+        //Jugador 6: columna derecha, tercera posición --------------------
+
+        panelesJugadores[5] =
+                findViewById(R.id.tarjetaJugador6);
+
+        txtNombresJugadores[5] =
+                findViewById(R.id.txtNombreJugador6);
+
+        txtPuntuacionesJugadores[5] =
+                findViewById(R.id.txtPuntuacionJugador6);
 
         grupoMultiplicadores =
                 findViewById(R.id.grupoMultiplicadores);
@@ -681,15 +722,14 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
     private void finalizarTurno() {
 
-        if (partidaFinalizada) {
+        if (partidaFinalizada || animacionCambioTurnoActiva) {
             return;
         }
 
         int puntuacionAntes =
                 puntuacionesJugadores[jugadorActual];
 
-        //Permitir saltar el turno sin lanzar dardos --------------------
-
+        //Permitir saltar el turno sin lanzar dardos
         if (dardoActual == 0) {
 
             guardarTiradaTemporal(
@@ -698,13 +738,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                     false
             );
 
-            avanzarJugador();
-
-            if (!partidaFinalizada) {
-                prepararNuevoTurno();
-                actualizarInterfazCompleta();
-            }
-
+            cambiarTurnoConAnimacion();
             return;
         }
 
@@ -738,12 +772,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 false
         );
 
-        avanzarJugador();
-
-        if (!partidaFinalizada) {
-            prepararNuevoTurno();
-            actualizarInterfazCompleta();
-        }
+        cambiarTurnoConAnimacion();
     }
 
     //Finalización del turno por exceso ------------------------------------------
@@ -765,12 +794,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT
         ).show();
 
-        avanzarJugador();
-
-        if (!partidaFinalizada) {
-            prepararNuevoTurno();
-            actualizarInterfazCompleta();
-        }
+        cambiarTurnoConAnimacion();
     }
 
     //Finalización de un jugador --------------------------------------------------
@@ -830,10 +854,11 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             finalizarPartida(
                     MOTIVO_TODOS_FINALIZADOS
             );
+
             return;
         }
 
-        avanzarJugador();
+        cambiarTurnoConAnimacion();
 
         if (!partidaFinalizada) {
             prepararNuevoTurno();
@@ -966,6 +991,63 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 );
 
         historialTiradas.add(registro);
+    }
+
+    //Cambio de turno con animación -------------------------------------------------
+
+    private void cambiarTurnoConAnimacion() {
+
+        if (partidaFinalizada || animacionCambioTurnoActiva) {
+            return;
+        }
+
+        animacionCambioTurnoActiva = true;
+
+        bloquearBotonesPartida();
+
+        //Fade out del nombre y puntuación del jugador actual
+        txtNombreJugadorActual.animate()
+                .alpha(0f)
+                .setDuration(250)
+                .start();
+
+        txtPuntuacionJugadorActual.animate()
+                .alpha(0f)
+                .setDuration(250)
+                .withEndAction(() -> {
+
+                    //Cambiar al siguiente jugador
+                    avanzarJugador();
+
+                    if (partidaFinalizada) {
+                        animacionCambioTurnoActiva = false;
+                        return;
+                    }
+
+                    prepararNuevoTurno();
+                    actualizarInterfazCompleta();
+
+                    //Estado inicial para el fade in
+                    txtNombreJugadorActual.setAlpha(0f);
+                    txtPuntuacionJugadorActual.setAlpha(0f);
+
+                    //Fade in del nuevo jugador
+                    txtNombreJugadorActual.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                    txtPuntuacionJugadorActual.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .withEndAction(() -> {
+
+                                animacionCambioTurnoActiva = false;
+                                actualizarEstadoBotones();
+                            })
+                            .start();
+                })
+                .start();
     }
 
     //Actualización completa ------------------------------------------------------

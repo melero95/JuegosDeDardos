@@ -695,16 +695,32 @@
                     </LinearLayout>
 
                     <!-- Botón deshacer -->
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnDeshacerTirada"
-                        style="@style/BotonAccionOscuro"
                         android:layout_width="match_parent"
-                        android:layout_height="34dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_height="46dp"
+                        android:layout_marginTop="6dp"
+
+                        android:backgroundTint="#673AB7"
+                        android:gravity="center"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
+
                         android:text="DESHACER TIRADA"
-                        android:textSize="10sp" />
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+
+                        app:cornerRadius="8dp"
+                        app:strokeColor="#673AB7"
+                        app:strokeWidth="2dp"
+
+                        app:icon="@drawable/icono_deshacer"
+                        app:iconGravity="textStart"
+                        app:iconPadding="9dp"
+                        app:iconSize="21dp"
+                        app:iconTint="@android:color/white" />
 
                 </LinearLayout>
 
