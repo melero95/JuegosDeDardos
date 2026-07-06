@@ -51,25 +51,15 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     public static final String EXTRA_NOMBRES_JUGADORES = "nombresJugadores";
     public static final String EXTRA_COLOR_JUGADOR = "colorJugador";
 
-    // Extras enviados a ResultadoActivity --------------------------------------
-
-    public static final String EXTRA_MOTIVO_FINALIZACION =
-            "resultado_motivo_finalizacion";
-
-    public static final String EXTRA_NUMERO_JUGADORES_RESULTADO =
-            "resultado_numero_jugadores";
-
-    public static final String EXTRA_RONDAS_JUGADAS =
-            "resultado_rondas_jugadas";
-
-    public static final String EXTRA_NOMBRE_GANADOR =
-            "resultado_nombre_ganador";
-
-    public static final String EXTRA_PUNTUACIONES =
-            "resultado_puntuaciones";
-
+    /*
+     * Datos específicos de Cricket. ResultadoActivity puede ignorarlos
+     * actualmente y recuperarlos en el futuro para una pantalla de detalles.
+     */
     public static final String EXTRA_MARCAS_CRIQUET =
             "resultado_marcas_criquet";
+
+    public static final String EXTRA_OBJETIVOS_CRIQUET =
+            "resultado_objetivos_criquet";
 
     // Constantes ---------------------------------------------------------------
 
@@ -1472,253 +1462,259 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                 .show();
     }
 
+    private String obtenerNombreModoMostrado() {
+
+        if (modoCriquet == ModoCriquet.CUT_THROAT) {
+            return "CUT THROAT CRICKET";
+        }
+
+        return "CRICKET";
+    }
+
     // ResultadoActivity --------------------------------------------------------
 
     private void abrirResultadoActivity(
             int indiceGanador) {
 
-        int[] ordenClasificacion =
-                obtenerOrdenClasificacion(
-                        indiceGanador
+        /*
+         * Construimos la clasificación final usando el mismo formato
+         * que PartidaPuntosActivity y ResultadoActivity.
+         */
+        ArrayList<Integer> clasificacion =
+                construirClasificacionFinal(indiceGanador);
+
+        ArrayList<String> nombresOrdenados =
+                new ArrayList<>();
+
+        ArrayList<Integer> puntuacionesOrdenadas =
+                new ArrayList<>();
+
+        ArrayList<Integer> coloresOrdenados =
+                new ArrayList<>();
+
+        ArrayList<Integer> posiciones =
+                new ArrayList<>();
+
+        ArrayList<Integer> indicesOriginales =
+                new ArrayList<>();
+
+        for (int posicion = 0;
+             posicion < clasificacion.size();
+             posicion++) {
+
+            int indiceJugador =
+                    clasificacion.get(posicion);
+
+            nombresOrdenados.add(
+                    nombresJugadores[indiceJugador]
+            );
+
+            puntuacionesOrdenadas.add(
+                    puntuacionesJugadores[indiceJugador]
+            );
+
+            coloresOrdenados.add(
+                    coloresJugadores[indiceJugador]
+            );
+
+            posiciones.add(
+                    posicion + 1
+            );
+
+            indicesOriginales.add(
+                    indiceJugador
+            );
+        }
+
+        String nombreGanador =
+                nombresOrdenados.isEmpty()
+                        ? ""
+                        : nombresOrdenados.get(0);
+
+        /*
+         * Guardamos también la tabla de marcas en el mismo orden
+         * que la clasificación enviada a ResultadoActivity.
+         */
+        int[] marcasOrdenadas =
+                aplanarMarcasClasificacion(
+                        clasificacion
                 );
 
-        String[] nombresOrdenados =
-                ordenarNombres(
-                        ordenClasificacion
-                );
+        String motivoFinalizacion =
+                maxRondas > 0 && rondaActual > maxRondas
+                        ? "LIMITE_RONDAS"
+                        : "VICTORIA";
 
-        int[] puntuacionesOrdenadas =
-                ordenarPuntuaciones(
-                        ordenClasificacion
-                );
+        Intent intent = new Intent(
+                PartidaCriquetActivity.this,
+                ResultadoActivity.class
+        );
 
-        int[] coloresOrdenados =
-                ordenarColores(
-                        ordenClasificacion
-                );
-
-        int[][] marcasOrdenadas =
-                ordenarMarcas(
-                        ordenClasificacion
-                );
-
-        Intent intent =
-                new Intent(
-                        this,
-                        ResultadoActivity.class
-                );
-
+        // Datos generales de la partida
         intent.putExtra(
-                EXTRA_MODO_JUEGO,
+                ResultadoActivity.EXTRA_MODO_JUEGO,
                 obtenerNombreModoMostrado()
         );
 
         intent.putExtra(
-                EXTRA_MAX_RONDAS,
-                maxRondas
+                ResultadoActivity.EXTRA_MOTIVO_FINALIZACION,
+                motivoFinalizacion
         );
 
         intent.putExtra(
-                EXTRA_NOMBRES_JUGADORES,
-                nombresOrdenados
-        );
-
-        intent.putExtra(
-                EXTRA_COLOR_JUGADOR,
-                coloresOrdenados
-        );
-
-        intent.putExtra(
-                EXTRA_MOTIVO_FINALIZACION,
-                maxRondas > 0 && rondaActual > maxRondas
-                        ? "LIMITE_RONDAS"
-                        : "VICTORIA"
-        );
-
-        intent.putExtra(
-                EXTRA_NUMERO_JUGADORES_RESULTADO,
+                ResultadoActivity.EXTRA_NUMERO_JUGADORES,
                 nombresJugadores.length
         );
 
         intent.putExtra(
-                EXTRA_RONDAS_JUGADAS,
-                Math.min(
-                        rondaActual,
-                        maxRondas > 0
-                                ? maxRondas
-                                : rondaActual
-                )
+                ResultadoActivity.EXTRA_RONDAS_JUGADAS,
+                obtenerRondasJugadasResultado()
         );
 
         intent.putExtra(
-                EXTRA_NOMBRE_GANADOR,
-                nombresJugadores[indiceGanador]
+                ResultadoActivity.EXTRA_MAX_RONDAS,
+                maxRondas
         );
 
         intent.putExtra(
-                EXTRA_PUNTUACIONES,
+                ResultadoActivity.EXTRA_NOMBRE_GANADOR,
+                nombreGanador
+        );
+
+        // Datos ordenados de los jugadores
+        intent.putStringArrayListExtra(
+                ResultadoActivity.EXTRA_NOMBRES_JUGADORES,
+                nombresOrdenados
+        );
+
+        intent.putIntegerArrayListExtra(
+                ResultadoActivity.EXTRA_PUNTUACIONES,
                 puntuacionesOrdenadas
         );
 
-        intent.putExtra(
-                EXTRA_MARCAS_CRIQUET,
-                aplanarMatriz(marcasOrdenadas)
+        intent.putIntegerArrayListExtra(
+                ResultadoActivity.EXTRA_COLORES,
+                coloresOrdenados
         );
 
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.putIntegerArrayListExtra(
+                ResultadoActivity.EXTRA_POSICIONES,
+                posiciones
+        );
+
+        intent.putIntegerArrayListExtra(
+                ResultadoActivity.EXTRA_INDICES_ORIGINALES,
+                indicesOriginales
+        );
+
+        /*
+         * Extras opcionales específicos de Cricket.
+         * No afectan a ResultadoActivity mientras no los lea.
+         */
+        intent.putExtra(
+                EXTRA_MARCAS_CRIQUET,
+                marcasOrdenadas
+        );
+
+        intent.putExtra(
+                EXTRA_OBJETIVOS_CRIQUET,
+                OBJETIVOS.clone()
         );
 
         startActivity(intent);
         finish();
     }
 
-    private String obtenerNombreModoMostrado() {
+    private int[] aplanarMarcasClasificacion(
+            ArrayList<Integer> clasificacion) {
 
-        if (modoCriquet == ModoCriquet.CUT_THROAT) {
-            return "CUT THROAT CRIQUET";
+        int cantidadObjetivos =
+                OBJETIVOS.length;
+
+        int[] resultado =
+                new int[
+                        clasificacion.size()
+                                * cantidadObjetivos
+                        ];
+
+        int posicion = 0;
+
+        for (int indiceJugador : clasificacion) {
+
+            for (int indiceObjetivo = 0;
+                 indiceObjetivo < cantidadObjetivos;
+                 indiceObjetivo++) {
+
+                resultado[posicion] =
+                        marcasJugadores[indiceJugador]
+                                [indiceObjetivo];
+
+                posicion++;
+            }
         }
 
-        return "CRIQUET";
+        return resultado;
     }
 
-    private int[] obtenerOrdenClasificacion(
+    private int obtenerRondasJugadasResultado() {
+
+        if (maxRondas > 0 && rondaActual > maxRondas) {
+            return maxRondas;
+        }
+
+        return Math.max(1, rondaActual);
+    }
+
+    /**
+     * En Criquet normal se ordena de mayor a menor puntuación.
+     * En Cut Throat se ordena de menor a mayor puntuación.
+     *
+     * El ganador detectado se fuerza siempre a la primera posición.
+     */
+    private ArrayList<Integer> construirClasificacionFinal(
             int indiceGanador) {
 
-        List<Integer> indices =
+        ArrayList<Integer> clasificacion =
                 new ArrayList<>();
 
         for (int i = 0;
              i < nombresJugadores.length;
              i++) {
 
-            indices.add(i);
+            clasificacion.add(i);
         }
-
-        Comparator<Integer> comparador;
 
         if (modoCriquet == ModoCriquet.CRIQUET) {
 
-            comparador =
-                    (a, b) -> Integer.compare(
-                            puntuacionesJugadores[b],
-                            puntuacionesJugadores[a]
-                    );
+            clasificacion.sort(
+                    (indice1, indice2) ->
+                            Integer.compare(
+                                    puntuacionesJugadores[indice2],
+                                    puntuacionesJugadores[indice1]
+                            )
+            );
 
         } else {
 
-            comparador =
-                    (a, b) -> Integer.compare(
-                            puntuacionesJugadores[a],
-                            puntuacionesJugadores[b]
-                    );
+            clasificacion.sort(
+                    (indice1, indice2) ->
+                            Integer.compare(
+                                    puntuacionesJugadores[indice1],
+                                    puntuacionesJugadores[indice2]
+                            )
+            );
         }
 
-        indices.sort(comparador);
-
-        indices.remove(
+        clasificacion.remove(
                 Integer.valueOf(indiceGanador)
         );
 
-        indices.add(0, indiceGanador);
+        clasificacion.add(
+                0,
+                indiceGanador
+        );
 
-        int[] orden =
-                new int[indices.size()];
-
-        for (int i = 0;
-             i < indices.size();
-             i++) {
-
-            orden[i] = indices.get(i);
-        }
-
-        return orden;
-    }
-
-    private String[] ordenarNombres(int[] orden) {
-
-        String[] resultado =
-                new String[orden.length];
-
-        for (int i = 0;
-             i < orden.length;
-             i++) {
-
-            resultado[i] =
-                    nombresJugadores[orden[i]];
-        }
-
-        return resultado;
-    }
-
-    private int[] ordenarPuntuaciones(int[] orden) {
-
-        int[] resultado =
-                new int[orden.length];
-
-        for (int i = 0;
-             i < orden.length;
-             i++) {
-
-            resultado[i] =
-                    puntuacionesJugadores[orden[i]];
-        }
-
-        return resultado;
-    }
-
-    private int[] ordenarColores(int[] orden) {
-
-        int[] resultado =
-                new int[orden.length];
-
-        for (int i = 0;
-             i < orden.length;
-             i++) {
-
-            resultado[i] =
-                    coloresJugadores[orden[i]];
-        }
-
-        return resultado;
-    }
-
-    private int[][] ordenarMarcas(int[] orden) {
-
-        int[][] resultado =
-                new int[orden.length][OBJETIVOS.length];
-
-        for (int i = 0;
-             i < orden.length;
-             i++) {
-
-            resultado[i] =
-                    marcasJugadores[orden[i]].clone();
-        }
-
-        return resultado;
-    }
-
-    private int[] aplanarMatriz(int[][] matriz) {
-
-        int[] resultado =
-                new int[
-                        matriz.length
-                                * OBJETIVOS.length
-                        ];
-
-        int posicion = 0;
-
-        for (int[] fila : matriz) {
-
-            for (int valor : fila) {
-
-                resultado[posicion] = valor;
-                posicion++;
-            }
-        }
-
-        return resultado;
+        return clasificacion;
     }
 
     // Salida -------------------------------------------------------------------
