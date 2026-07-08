@@ -10,9 +10,9 @@
     android:background="@drawable/fondo"
     tools:context="activities.PartidaRondasActivity"
     android:paddingStart="5dp"
-    android:paddingTop="35dp"
+    android:paddingTop="0dp"
     android:paddingEnd="5dp"
-    android:paddingBottom="55dp">
+    android:paddingBottom="0dp">
 
     <!-- ===================================================== -->
     <!-- CABECERA -->
@@ -27,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="8dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,6 +42,7 @@
             android:id="@+id/cardModoJuego"
             android:layout_width="match_parent"
             android:layout_height="42dp"
+            android:layout_marginTop="5dp"
             app:cardBackgroundColor="#E6101D35"
             app:cardCornerRadius="3dp"
             app:cardElevation="2dp"
@@ -167,9 +168,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="8dp"
-            android:paddingTop="6dp"
+            android:paddingTop="28dp"
             android:paddingEnd="8dp"
-            android:paddingBottom="6dp">
+            android:paddingBottom="2dp">
 
             <!-- ================================================= -->
             <!-- MARCADORES -->
@@ -265,8 +266,10 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical"
+                        android:alpha="0.35"
+                        android:enabled="false"
                         android:padding="1dp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <TextView
                             android:id="@+id/txtNombreJugador5"
@@ -411,8 +414,10 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical"
+                        android:alpha="0.35"
+                        android:enabled="false"
                         android:padding="1dp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <TextView
                             android:id="@+id/txtNombreJugador6"
@@ -449,7 +454,7 @@
                 android:id="@+id/panelInformacionRonda"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="18dp"
                 app:cardBackgroundColor="#E6102A51"
                 app:cardCornerRadius="3dp"
                 app:cardElevation="2dp"
@@ -460,7 +465,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="3dp">
+                    android:padding="10dp">
 
                     <!-- Ronda, dardos y tirada actual -->
                     <LinearLayout
@@ -694,16 +699,28 @@
                     </LinearLayout>
 
                     <!-- Botón deshacer -->
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnDeshacerTirada"
-                        style="@style/BotonAccionOscuro"
                         android:layout_width="match_parent"
-                        android:layout_height="34dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#B85C00"
+                        android:gravity="center"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
                         android:text="DESHACER TIRADA"
-                        android:textSize="10sp" />
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="8dp"
+                        app:icon="@drawable/icono_deshacer"
+                        app:iconGravity="textStart"
+                        app:iconPadding="8dp"
+                        app:iconSize="20dp"
+                        app:iconTint="@android:color/white"
+                        app:strokeColor="#F0A14A"
+                        app:strokeWidth="2dp" />
 
                 </LinearLayout>
 
@@ -717,10 +734,11 @@
                 android:id="@+id/contenedorObjetivoRonda"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="22dp"
-                android:background="@drawable/fondo_casilla_tirada"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="18dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/fondo_objetivo_ronda"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="8dp"
@@ -762,10 +780,13 @@
         android:id="@+id/contenedorBotoneraRondas"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="4dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="0dp"
+        android:paddingTop="1dp"
+        android:paddingEnd="0dp"
+        android:paddingBottom="0dp"
         app:layout_constraintBottom_toTopOf="@id/contenedorBotonesInferiores"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -804,6 +825,10 @@
                     android:id="@+id/btnSimpleRonda"
                     style="@style/BotonPuntuacion"
                     android:layout_width="0dp"
+                    android:background="@drawable/fondo_boton_simple_ronda"
+                    android:backgroundTint="@null"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@null"
                     android:layout_height="match_parent"
                     android:layout_marginStart="3dp"
                     android:layout_marginBottom="2dp"
@@ -825,6 +850,10 @@
                     android:id="@+id/btnDobleRonda"
                     style="@style/BotonPuntuacion"
                     android:layout_width="0dp"
+                    android:background="@drawable/fondo_boton_doble_ronda"
+                    android:backgroundTint="@null"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@null"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="3dp"
                     android:layout_weight="1"
@@ -834,6 +863,10 @@
                     android:id="@+id/btnTripleRonda"
                     style="@style/BotonPuntuacion"
                     android:layout_width="0dp"
+                    android:background="@drawable/fondo_boton_triple_ronda"
+                    android:backgroundTint="@null"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@null"
                     android:layout_height="match_parent"
                     android:layout_marginStart="3dp"
                     android:layout_weight="1"
@@ -1094,10 +1127,13 @@
     <LinearLayout
         android:id="@+id/contenedorBotonesInferiores"
         android:layout_width="0dp"
-        android:layout_height="62dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@color/blue"
         android:orientation="horizontal"
-        android:padding="5dp"
+        android:padding="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -1109,6 +1145,8 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="3dp"
             android:layout_weight="1.15"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:text="VER MARCADOR"
             android:textSize="11sp" />
 
@@ -1119,6 +1157,8 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="3dp"
             android:layout_weight="1.25"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:text="SIGUIENTE TURNO"
             android:textSize="11sp" />
 
@@ -1129,6 +1169,8 @@
             android:layout_height="match_parent"
             android:layout_marginStart="3dp"
             android:layout_weight="1.15"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:text="SALIR PARTIDA"
             android:textSize="11sp" />
 
