@@ -698,29 +698,25 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnDeshacerTirada"
                         android:layout_width="match_parent"
-                        android:layout_height="46dp"
-                        android:layout_marginTop="6dp"
-
-                        android:backgroundTint="#673AB7"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#B85C00"
                         android:gravity="center"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
-
                         android:text="DESHACER TIRADA"
                         android:textAllCaps="false"
                         android:textColor="@android:color/white"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
-
                         app:cornerRadius="8dp"
-                        app:strokeColor="#673AB7"
-                        app:strokeWidth="2dp"
-
                         app:icon="@drawable/icono_deshacer"
                         app:iconGravity="textStart"
-                        app:iconPadding="9dp"
-                        app:iconSize="21dp"
-                        app:iconTint="@android:color/white" />
+                        app:iconPadding="8dp"
+                        app:iconSize="20dp"
+                        app:iconTint="@android:color/white"
+                        app:strokeColor="#F0A14A"
+                        app:strokeWidth="2dp" />
 
                 </LinearLayout>
 
