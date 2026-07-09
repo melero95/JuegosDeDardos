@@ -116,9 +116,9 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private final String[] tiradasTurno = {"", "", ""};
 
     /*
-     * Se guarda el estado anterior a cada dardo.
-     * Si el tercer dardo provoca un cambio automático, deshacer devuelve
-     * correctamente al turno y jugador anteriores.
+     * Se guarda el estado anterior a cada dardo y a cada cambio manual.
+     * Si el tercer dardo provoca un cambio automático, o si se pulsa
+     * SIGUIENTE TURNO, deshacer devuelve correctamente al estado anterior.
      */
     private final Deque<EstadoPartida> historialEstados =
             new ArrayDeque<>();
@@ -944,6 +944,13 @@ public class PartidaCriquetActivity extends AppCompatActivity {
             return;
         }
 
+        /*
+         * Se guarda también el cambio manual de turno.
+         * De esta forma, DESHACER permite regresar al jugador,
+         * ronda, dardo, puntuaciones y cierres anteriores.
+         */
+        guardarEstadoActual();
+
         pasarAlSiguienteJugador();
     }
 
@@ -1434,23 +1441,28 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         StringBuilder mensaje =
                 new StringBuilder();
 
-        for (int i = 0;
-             i < nombresJugadores.length;
-             i++) {
+        ArrayList<Integer> clasificacion =
+                construirClasificacionMarcador();
 
-            mensaje.append(
-                    nombresJugadores[i]
-            );
+        for (int posicion = 0;
+             posicion < clasificacion.size();
+             posicion++) {
 
-            mensaje.append(": ");
+            int indiceJugador =
+                    clasificacion.get(posicion);
 
-            mensaje.append(
-                    puntuacionesJugadores[i]
-            );
+            mensaje.append(posicion + 1)
+                    .append(". ")
+                    .append(nombresJugadores[indiceJugador])
+                    .append(": ")
+                    .append(puntuacionesJugadores[indiceJugador])
+                    .append(" puntos");
 
-            mensaje.append(" puntos");
+            if (haCerradoTodosLosObjetivos(indiceJugador)) {
+                mensaje.append(" · Cerrado");
+            }
 
-            if (i < nombresJugadores.length - 1) {
+            if (posicion < clasificacion.size() - 1) {
                 mensaje.append("\n");
             }
         }
@@ -1460,6 +1472,95 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                 .setMessage(mensaje.toString())
                 .setPositiveButton("CERRAR", null)
                 .show();
+    }
+
+    /**
+     * Clasificación provisional utilizada por el botón VER MARCADOR.
+     *
+     * Cricket: mayor puntuación primero.
+     * Cut Throat: menor puntuación primero.
+     *
+     * En empate se prioriza al jugador que tenga más objetivos cerrados
+     * y después se conserva el orden original.
+     */
+    private ArrayList<Integer> construirClasificacionMarcador() {
+
+        ArrayList<Integer> clasificacion =
+                new ArrayList<>();
+
+        for (int i = 0;
+             i < nombresJugadores.length;
+             i++) {
+
+            clasificacion.add(i);
+        }
+
+        clasificacion.sort(
+                (indice1, indice2) -> {
+
+                    int comparacionPuntos;
+
+                    if (modoCriquet == ModoCriquet.CRIQUET) {
+
+                        comparacionPuntos =
+                                Integer.compare(
+                                        puntuacionesJugadores[indice2],
+                                        puntuacionesJugadores[indice1]
+                                );
+
+                    } else {
+
+                        comparacionPuntos =
+                                Integer.compare(
+                                        puntuacionesJugadores[indice1],
+                                        puntuacionesJugadores[indice2]
+                                );
+                    }
+
+                    if (comparacionPuntos != 0) {
+                        return comparacionPuntos;
+                    }
+
+                    int objetivosCerrados1 =
+                            contarObjetivosCerrados(indice1);
+
+                    int objetivosCerrados2 =
+                            contarObjetivosCerrados(indice2);
+
+                    int comparacionCierres =
+                            Integer.compare(
+                                    objetivosCerrados2,
+                                    objetivosCerrados1
+                            );
+
+                    if (comparacionCierres != 0) {
+                        return comparacionCierres;
+                    }
+
+                    return Integer.compare(
+                            indice1,
+                            indice2
+                    );
+                }
+        );
+
+        return clasificacion;
+    }
+
+    private int contarObjetivosCerrados(
+            int indiceJugador) {
+
+        int objetivosCerrados = 0;
+
+        for (int marcas :
+                marcasJugadores[indiceJugador]) {
+
+            if (marcas >= MARCAS_PARA_CERRAR) {
+                objetivosCerrados++;
+            }
+        }
+
+        return objetivosCerrados;
     }
 
     private String obtenerNombreModoMostrado() {

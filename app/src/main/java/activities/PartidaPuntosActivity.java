@@ -19,8 +19,10 @@ import androidx.core.content.ContextCompat;
 
 import com.productos.juegosdedardos.R;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 
 public class PartidaPuntosActivity extends AppCompatActivity {
 
@@ -112,6 +114,11 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
     private final ArrayList<RegistroTiradaTemporal> historialTiradas =
             new ArrayList<>();
+
+    //Historial completo para deshacer --------------------------------------------
+
+    private final Deque<EstadoPartida> historialEstados =
+            new ArrayDeque<>();
 
     //Información general ---------------------------------------------------------
 
@@ -425,6 +432,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         Arrays.fill(textosDardos, null);
 
         ordenFinalizacion.clear();
+        historialEstados.clear();
     }
 
     //Configuración de botones ----------------------------------------------------
@@ -484,19 +492,15 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         });
 
         btnDeshacerTirada.setOnClickListener(view ->
-                deshacerUltimoDardo()
+                deshacerUltimaTirada()
         );
 
         btnSiguienteTurno.setOnClickListener(view ->
-                finalizarTurno()
+                finalizarTurnoManual()
         );
 
         btnVerMarcador.setOnClickListener(view ->
-                Toast.makeText(
-                        this,
-                        "Marcador completo pendiente",
-                        Toast.LENGTH_SHORT
-                ).show()
+                mostrarDialogoMarcador()
         );
 
         btnSalirPartida.setOnClickListener(view ->
@@ -645,6 +649,8 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             String textoDardo
     ) {
 
+        guardarEstadoActual();
+
         puntosDardos[dardoActual] = puntos;
         textosDardos[dardoActual] = textoDardo;
 
@@ -685,37 +691,114 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Deshacer último dardo -------------------------------------------------------
+    //Guardado del estado actual --------------------------------------------------
 
-    private void deshacerUltimoDardo() {
+    private void guardarEstadoActual() {
 
-        if (partidaFinalizada) {
+        historialEstados.push(
+                new EstadoPartida(
+                        puntuacionesJugadores.clone(),
+                        jugadoresFinalizados.clone(),
+                        new ArrayList<>(ordenFinalizacion),
+                        jugadorActual,
+                        rondaActual,
+                        dardoActual,
+                        puntosTurnoActual,
+                        puntosDardos.clone(),
+                        textosDardos.clone(),
+                        historialTiradas.size()
+                )
+        );
+    }
+
+    //Deshacer última acción ------------------------------------------------------
+
+    private void deshacerUltimaTirada() {
+
+        if (partidaFinalizada
+                || animacionCambioTurnoActiva) {
+
             return;
         }
 
-        if (dardoActual <= 0) {
+        if (historialEstados.isEmpty()) {
 
             Toast.makeText(
                     this,
-                    "No hay ninguna tirada que deshacer",
+                    "No hay ninguna tirada para deshacer",
                     Toast.LENGTH_SHORT
             ).show();
 
             return;
         }
 
-        dardoActual--;
+        EstadoPartida estadoAnterior =
+                historialEstados.pop();
 
-        puntosTurnoActual -=
-                puntosDardos[dardoActual];
+        puntuacionesJugadores =
+                estadoAnterior.puntuacionesJugadores.clone();
 
-        puntosDardos[dardoActual] = 0;
-        textosDardos[dardoActual] = null;
+        jugadoresFinalizados =
+                estadoAnterior.jugadoresFinalizados.clone();
+
+        ordenFinalizacion.clear();
+        ordenFinalizacion.addAll(
+                estadoAnterior.ordenFinalizacion
+        );
+
+        jugadorActual =
+                estadoAnterior.jugadorActual;
+
+        rondaActual =
+                estadoAnterior.rondaActual;
+
+        dardoActual =
+                estadoAnterior.dardoActual;
+
+        puntosTurnoActual =
+                estadoAnterior.puntosTurnoActual;
+
+        System.arraycopy(
+                estadoAnterior.puntosDardos,
+                0,
+                puntosDardos,
+                0,
+                puntosDardos.length
+        );
+
+        System.arraycopy(
+                estadoAnterior.textosDardos,
+                0,
+                textosDardos,
+                0,
+                textosDardos.length
+        );
+
+        while (historialTiradas.size()
+                > estadoAnterior.tamanoHistorialTiradas) {
+
+            historialTiradas.remove(
+                    historialTiradas.size() - 1
+            );
+        }
 
         grupoMultiplicadores.check(R.id.radioX1);
 
-        actualizarInformacionTurno();
-        actualizarEstadoBotones();
+        actualizarInterfazCompleta();
+    }
+
+    //Finalización manual del turno ----------------------------------------------
+
+    private void finalizarTurnoManual() {
+
+        if (partidaFinalizada
+                || animacionCambioTurnoActiva) {
+
+            return;
+        }
+
+        guardarEstadoActual();
+        finalizarTurno();
     }
 
     //Finalización normal del turno ----------------------------------------------
@@ -859,11 +942,6 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
 
         cambiarTurnoConAnimacion();
-
-        if (!partidaFinalizada) {
-            prepararNuevoTurno();
-            actualizarInterfazCompleta();
-        }
     }
 
     //Cambio de jugador -----------------------------------------------------------
@@ -1274,7 +1352,9 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
     private void actualizarEstadoBotones() {
 
-        if (partidaFinalizada) {
+        if (partidaFinalizada
+                || animacionCambioTurnoActiva) {
+
             bloquearBotonesPartida();
             return;
         }
@@ -1294,7 +1374,13 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         radioX3.setEnabled(sePuedeLanzar);
 
         btnDeshacerTirada.setEnabled(
-                dardoActual > 0
+                !historialEstados.isEmpty()
+        );
+
+        btnDeshacerTirada.setAlpha(
+                historialEstados.isEmpty()
+                        ? 0.45f
+                        : 1.0f
         );
 
         btnSiguienteTurno.setEnabled(true);
@@ -1316,6 +1402,8 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         radioX3.setEnabled(false);
 
         btnDeshacerTirada.setEnabled(false);
+        btnDeshacerTirada.setAlpha(0.45f);
+
         btnSiguienteTurno.setEnabled(false);
     }
 
@@ -1393,6 +1481,117 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         public boolean isTurnoPasado() {
             return turnoPasado;
         }
+    }
+
+    //Estado completo para deshacer ------------------------------------------------
+
+    private static class EstadoPartida {
+
+        private final int[] puntuacionesJugadores;
+        private final boolean[] jugadoresFinalizados;
+
+        private final ArrayList<Integer> ordenFinalizacion;
+
+        private final int jugadorActual;
+        private final int rondaActual;
+        private final int dardoActual;
+        private final int puntosTurnoActual;
+
+        private final int[] puntosDardos;
+        private final String[] textosDardos;
+
+        private final int tamanoHistorialTiradas;
+
+        private EstadoPartida(
+                int[] puntuacionesJugadores,
+                boolean[] jugadoresFinalizados,
+                ArrayList<Integer> ordenFinalizacion,
+                int jugadorActual,
+                int rondaActual,
+                int dardoActual,
+                int puntosTurnoActual,
+                int[] puntosDardos,
+                String[] textosDardos,
+                int tamanoHistorialTiradas
+        ) {
+
+            this.puntuacionesJugadores =
+                    puntuacionesJugadores;
+
+            this.jugadoresFinalizados =
+                    jugadoresFinalizados;
+
+            this.ordenFinalizacion =
+                    ordenFinalizacion;
+
+            this.jugadorActual =
+                    jugadorActual;
+
+            this.rondaActual =
+                    rondaActual;
+
+            this.dardoActual =
+                    dardoActual;
+
+            this.puntosTurnoActual =
+                    puntosTurnoActual;
+
+            this.puntosDardos =
+                    puntosDardos;
+
+            this.textosDardos =
+                    textosDardos;
+
+            this.tamanoHistorialTiradas =
+                    tamanoHistorialTiradas;
+        }
+    }
+
+    //Marcador emergente ----------------------------------------------------------
+
+    private void mostrarDialogoMarcador() {
+
+        StringBuilder mensaje =
+                new StringBuilder();
+
+        ArrayList<Integer> clasificacion =
+                construirClasificacionFinal();
+
+        for (int posicion = 0;
+             posicion < clasificacion.size();
+             posicion++) {
+
+            int indiceJugador =
+                    clasificacion.get(posicion);
+
+            mensaje.append(posicion + 1)
+                    .append(". ")
+                    .append(nombresJugadores.get(indiceJugador))
+                    .append(": ")
+                    .append(puntuacionesJugadores[indiceJugador])
+                    .append(" puntos");
+
+            if (jugadoresFinalizados[indiceJugador]) {
+                mensaje.append(" - FINALIZADO");
+            }
+
+            if (indiceJugador == jugadorActual
+                    && !partidaFinalizada
+                    && !jugadoresFinalizados[indiceJugador]) {
+
+                mensaje.append(" - TURNO ACTUAL");
+            }
+
+            if (posicion < clasificacion.size() - 1) {
+                mensaje.append("\n");
+            }
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Marcador")
+                .setMessage(mensaje.toString())
+                .setPositiveButton("CERRAR", null)
+                .show();
     }
 
     //Construcción de la clasificación final --------------------
