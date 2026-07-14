@@ -3,6 +3,7 @@ package adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,13 +45,52 @@ public class ClasificacionResultadoAdapter
 
         ResultadoJugador jugador = listaJugadores.get(position);
 
-        holder.txtPosicion.setText(String.valueOf(jugador.getPosicion()));
+        int posicionJugador = jugador.getPosicion();
+
+        holder.txtPosicion.setText(posicionJugador + ".º");
         holder.txtNombre.setText(jugador.getNombre());
 
+        configurarMedalla(holder, posicionJugador);
+        configurarPuntuacion(holder, jugador);
+    }
+
+    //Configurar medalla --------------------
+    private void configurarMedalla(
+            @NonNull ResultadoViewHolder holder,
+            int posicionJugador) {
+
+        if (posicionJugador == 2) {
+
+            holder.imgMedalla.setVisibility(View.VISIBLE);
+            holder.imgMedalla.setImageResource(R.drawable.icono_plata);
+            holder.imgMedalla.setContentDescription("Medalla de plata");
+
+        } else if (posicionJugador == 3) {
+
+            holder.imgMedalla.setVisibility(View.VISIBLE);
+            holder.imgMedalla.setImageResource(R.drawable.icono_bronce);
+            holder.imgMedalla.setContentDescription("Medalla de bronce");
+
+        } else {
+
+            holder.imgMedalla.setVisibility(View.GONE);
+            holder.imgMedalla.setImageDrawable(null);
+            holder.imgMedalla.setContentDescription(null);
+        }
+    }
+
+    //Configurar puntuación --------------------
+    private void configurarPuntuacion(
+            @NonNull ResultadoViewHolder holder,
+            @NonNull ResultadoJugador jugador) {
+
         if (jugador.isMostrarPuntuacion()) {
+
             holder.txtPuntos.setVisibility(View.VISIBLE);
             holder.txtPuntos.setText(jugador.getPuntuacion() + " puntos");
+
         } else {
+
             holder.txtPuntos.setVisibility(View.GONE);
         }
     }
@@ -78,12 +118,17 @@ public class ClasificacionResultadoAdapter
     //ViewHolder --------------------
     static class ResultadoViewHolder extends RecyclerView.ViewHolder {
 
+        private final ImageView imgMedalla;
         private final TextView txtPosicion;
         private final TextView txtNombre;
         private final TextView txtPuntos;
 
         public ResultadoViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            imgMedalla = itemView.findViewById(
+                    R.id.imgMedallaClasificacion
+            );
 
             txtPosicion = itemView.findViewById(
                     R.id.txtPosicionClasificacion

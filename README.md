@@ -1,140 +1,304 @@
 # Juegos de Dardos
 
-Aplicación móvil para Android destinada a gestionar partidas de distintos juegos de dardos.
+Aplicación Android desarrollada en Java para gestionar partidas de diferentes modalidades de juegos de dardos.
 
-El proyecto permite configurar jugadores, seleccionar diferentes modalidades de juego, registrar las tiradas y mostrar el resultado final de cada partida.
+El objetivo principal del proyecto es permitir configurar partidas, registrar tiradas, controlar turnos y rondas, mostrar resultados finales y, posteriormente, almacenar un historial completo con estadísticas.
 
-Este repositorio se utiliza también para documentar y controlar el desarrollo progresivo de la aplicación.
+Este repositorio se utiliza para controlar el desarrollo de la aplicación de forma progresiva mediante Git y GitHub.
 
-## Estado del proyecto
+## Estado actual del proyecto
 
 Proyecto actualmente en desarrollo.
 
-En este momento se está trabajando en la implementación de las partidas, el registro de resultados, las estadísticas y el almacenamiento persistente de los datos.
+La aplicación ya cuenta con varias pantallas funcionales, navegación principal, configuración de partidas, lógica de distintos modos de juego, pantalla de resultados y sistema básico de guardado para continuar partidas.
 
-## Funcionalidades previstas
+Actualmente se está trabajando en la mejora de la persistencia, la pantalla de ajustes, el historial de partidas y las estadísticas.
 
-* Creación de nuevas partidas.
-* Configuración del número de jugadores.
-* Personalización del nombre y color de cada jugador.
-* Selección del modo de juego.
-* Registro de los puntos obtenidos con cada dardo.
-* Control de turnos y rondas.
-* Posibilidad de deshacer la última tirada.
-* Confirmación antes de abandonar una partida.
-* Continuación de partidas guardadas.
-* Clasificación final de los jugadores.
+## Funcionalidades implementadas
+
+### Pantalla principal
+
+La aplicación dispone de una pantalla principal con acceso a las secciones principales:
+
+* Continuar partida.
+* Nueva partida.
 * Historial de partidas.
-* Estadísticas generales y por jugador.
-* Opción de revancha al finalizar una partida.
-* Gestión de ajustes de la aplicación.
+* Ajustes.
+* Menú lateral de navegación.
 
-## Modos de juego
+El botón de continuar partida se muestra únicamente cuando existe una partida guardada.
 
-La aplicación incluirá los siguientes modos:
+### Configuración de nueva partida
 
-* 301
-* 501
-* Cricket
-* Cut Throat Cricket
-* Double Down
-* Around the Clock
+La pantalla de configuración permite:
+
+* Seleccionar el modo de juego.
+* Elegir el número máximo de rondas.
+* Añadir jugadores.
+* Eliminar jugadores.
+* Seleccionar el nombre de cada jugador.
+* Asignar un color a cada jugador.
+* Usar la última configuración guardada.
+* Crear una nueva partida.
+
+En los modos de Cricket se fuerza un mínimo de dos jugadores.
+
+### Modos de juego implementados
+
+La aplicación incluye lógica para los siguientes modos:
+
+* 301.
+* 501.
+* Cricket.
+* Cut Throat Cricket.
+* Double Down.
+* Around the Clock.
+
+Cada modo tiene su propia pantalla o lógica específica según sus reglas.
+
+### Partidas de puntuación
+
+Los modos 301 y 501 permiten:
+
+* Controlar la puntuación de cada jugador.
+* Registrar tiradas con multiplicador.
+* Restar puntos según el valor del dardo.
+* Detectar cuándo un jugador llega a cero.
+* Controlar si un jugador se pasa de puntuación.
+* Avanzar de turno.
+* Deshacer la última tirada.
+* Finalizar la partida y mostrar el resultado.
+
+### Partidas de Cricket
+
+Los modos Cricket y Cut Throat Cricket permiten:
+
+* Registrar marcas sobre los objetivos 20, 19, 18, 17, 16, 15 y Bull.
+* Controlar cierres por jugador.
+* Mostrar el progreso de cierre de cada número.
+* Gestionar puntuaciones.
+* Detectar el final de la partida cuando un jugador ha cerrado todos los objetivos y va por delante.
+* Deshacer tiradas.
+* Avanzar turnos.
+
+### Partidas por rondas
+
+Los modos Double Down y Around the Clock utilizan una lógica específica basada en rondas.
+
+Double Down incluye:
+
+* Rondas fijas.
+* Puntuación inicial.
+* Registro de aciertos simples, dobles y triples.
+* Penalización cuando el jugador falla todos los dardos de la ronda.
+
+Around the Clock incluye:
+
+* Objetivo secuencial.
+* Avance del objetivo al acertar.
+* Control de turnos.
+* Botonera simplificada para acierto o fallo.
+
+### Pantalla de resultados
+
+La pantalla de resultados muestra:
+
+* Ganador de la partida.
+* Clasificación final.
+* Posición de cada jugador.
+* Puntuación final.
+* Colores asociados a los jugadores.
+* Botón para volver al inicio.
+* Botón de revancha.
+* Acceso previsto a estadísticas.
+
+La opción de revancha permite iniciar una nueva partida usando los datos de la partida finalizada.
+
+### Guardado de partida
+
+La aplicación utiliza `SharedPreferences` para guardar información básica sobre partidas en curso.
+
+Actualmente se guarda si existe una partida activa para poder mostrar u ocultar el botón de continuar partida desde la pantalla principal.
+
+También se está trabajando en clases de estado para almacenar partidas según el tipo de juego.
+
+### Última configuración
+
+La aplicación permite guardar y recuperar la última configuración usada para crear una partida.
+
+Esto facilita iniciar nuevas partidas con los mismos jugadores, colores y modo de juego.
 
 ## Tecnologías utilizadas
 
-* Java
-* Android Studio
-* XML
-* SQLite
-* SharedPreferences
-* Git
-* GitHub
+* Java.
+* Android Studio.
+* XML.
+* Android SDK.
+* AppCompat.
+* Material Components.
+* ConstraintLayout.
+* RecyclerView.
+* SharedPreferences.
+* SQLite.
+* Git.
+* GitHub.
 
 ## Estructura del proyecto
 
-El código está organizado en diferentes paquetes según su responsabilidad:
+El proyecto está organizado en varios paquetes principales:
 
 ```text
 activities/
-    Pantallas y actividades de la aplicación.
+    Contiene las pantallas principales de la aplicación.
 
 adapters/
-    Adaptadores utilizados para mostrar listas y clasificaciones.
+    Contiene los adaptadores usados para listas, clasificaciones y elementos dinámicos.
 
 modelos/
-    Clases que representan los datos de la aplicación.
+    Contiene las clases de datos utilizadas por la aplicación.
 
 sqlite/
-    Clases relacionadas con la base de datos SQLite.
+    Contendrá las clases relacionadas con la base de datos SQLite.
 ```
-
-Entre los principales modelos de datos se encuentran:
-
-* Jugador
-* Partida
-* Turno
-* Tirada
 
 ## Pantallas principales
 
-La aplicación contará con las siguientes pantallas:
+Actualmente el proyecto cuenta con las siguientes pantallas:
 
-* Pantalla principal.
-* Configuración de nueva partida.
-* Partida de puntuación.
-* Partida de Cricket.
-* Partida por rondas.
-* Pantalla de resultados.
-* Historial de partidas.
-* Estadísticas.
-* Ajustes.
+* `MainActivity`
+* `ConfigurarNuevaPartidaActivity`
+* `PartidaPuntosActivity`
+* `PartidaCriquetActivity`
+* `PartidaRondasActivity`
+* `ResultadoActivity`
+* `AjustesActivity`
 
-## Funcionamiento general
+También están previstas o en desarrollo:
 
-1. El usuario crea una nueva partida.
-2. Selecciona el modo de juego.
-3. Configura el número de jugadores y sus datos.
-4. La aplicación inicia la pantalla correspondiente al modo seleccionado.
-5. Se registran los dardos lanzados en cada turno.
-6. Al finalizar la partida, se calcula la clasificación.
-7. Los resultados y estadísticas se almacenan en la base de datos.
-8. Se muestra la pantalla final con el ganador y el resto de participantes.
+* `HistorialPartidasActivity`
+* `DetallePartidaActivity`
+* Pantallas de estadísticas.
+
+## Modelos y clases de apoyo
+
+El proyecto utiliza diferentes clases para representar los datos de la aplicación.
+
+Entre ellas se encuentran:
+
+* Jugadores.
+* Resultados de jugadores.
+* Estados de partida.
+* Datos necesarios para clasificaciones.
+* Datos enviados entre actividades mediante `Intent`.
+
+También se utilizan listas de jugadores, colores, puntuaciones, posiciones e índices originales para mantener la información correctamente al pasar de una pantalla a otra.
+
+## Navegación
+
+La navegación principal se realiza desde:
+
+* Botones de la pantalla principal.
+* Menú lateral.
+* Botones de acción dentro de cada pantalla.
+* Intents entre actividades.
+
+La aplicación permite volver al inicio desde la pantalla de resultados y confirmar la salida cuando el usuario intenta abandonar una partida en curso.
+
+## Diseño de la interfaz
+
+La interfaz utiliza un diseño visual personalizado con:
+
+* Fondo propio.
+* Toolbar superior.
+* Menú lateral.
+* Botones personalizados.
+* Colores por jugador.
+* Tarjetas visuales.
+* Iconos propios.
+* Pantalla de resultados con trofeo y clasificación.
+
+Los colores principales de la aplicación son azul y dorado.
 
 ## Persistencia de datos
 
-La aplicación utilizará distintos mecanismos de almacenamiento:
+Actualmente se utilizan `SharedPreferences` para:
 
-* `SharedPreferences` para guardar configuraciones y partidas temporales.
-* SQLite para almacenar jugadores, partidas, tiradas y estadísticas.
-* Objetos enviados mediante `Intent` para comunicar datos entre actividades.
+* Detectar si existe una partida guardada.
+* Guardar la última configuración utilizada.
+* Mantener información básica de partidas en curso.
+
+Como mejora futura se utilizará SQLite para almacenar:
+
+* Partidas finalizadas.
+* Jugadores.
+* Tiradas.
+* Resultados.
+* Estadísticas.
+* Historial completo.
+
+## Funcionalidades pendientes
+
+Las principales tareas pendientes son:
+
+* Completar la pantalla de ajustes.
+* Implementar el historial de partidas.
+* Implementar el detalle de una partida guardada.
+* Guardar partidas finalizadas en SQLite.
+* Crear estadísticas generales.
+* Crear estadísticas por jugador.
+* Mejorar el sistema de guardado y recuperación de partidas.
+* Añadir sonidos y vibración.
+* Añadir más opciones de configuración.
+* Mejorar las animaciones.
+* Pulir la interfaz en distintas resoluciones.
+* Revisar y limpiar código.
+* Añadir documentación interna al código.
 
 ## Objetivos del proyecto
 
-Los principales objetivos de la aplicación son:
+Los objetivos principales del proyecto son:
 
-* Facilitar el seguimiento de partidas de dardos.
-* Automatizar el cálculo de puntuaciones.
-* Evitar errores al controlar turnos y rondas.
-* Almacenar un historial completo de partidas.
-* Proporcionar estadísticas útiles a los jugadores.
-* Aplicar buenas prácticas de programación y organización de proyectos Android.
+* Crear una aplicación Android funcional para partidas de dardos.
+* Practicar el desarrollo de aplicaciones móviles en Java.
+* Aplicar navegación entre actividades.
+* Gestionar datos entre pantallas.
+* Usar componentes visuales personalizados.
+* Implementar lógica real de juego.
+* Guardar información de partidas.
+* Preparar una base para estadísticas e historial.
+* Mantener un repositorio organizado con control de versiones.
 
-## Desarrollo
+## Control de versiones
 
-El proyecto se está desarrollando de forma incremental, registrando los avances mediante commits en Git.
+El desarrollo se está registrando mediante Git y GitHub.
 
-Cada nueva funcionalidad se implementa, prueba y documenta antes de continuar con la siguiente parte del proyecto.
+La intención es realizar commits progresivos para dejar constancia de la evolución del proyecto, desde la estructura inicial hasta la implementación de cada funcionalidad.
 
-## Próximas tareas
+Ejemplos de commits recomendados:
 
-* Completar las estadísticas de la pantalla de resultados.
-* Implementar la opción de revancha.
-* Finalizar el almacenamiento de partidas en SQLite.
-* Implementar el historial de partidas.
-* Desarrollar los modos de juego pendientes.
-* Mejorar las animaciones y transiciones.
-* Añadir pruebas de funcionamiento.
+```text
+Añadir pantalla principal con navegación
+Implementar configuración de nueva partida
+Añadir lógica de partidas 301 y 501
+Implementar modo Cricket
+Añadir pantalla de resultados
+Guardar estado básico de partida en SharedPreferences
+Preparar pantalla de ajustes
+```
+
+## Próximos pasos
+
+Las siguientes mejoras previstas son:
+
+1. Completar `AjustesActivity`.
+2. Terminar el sistema de guardado de partidas en curso.
+3. Implementar SQLite para historial y estadísticas.
+4. Crear la pantalla de historial de partidas.
+5. Crear la pantalla de detalle de partida.
+6. Añadir estadísticas por jugador.
+7. Revisar el diseño visual final.
+8. Preparar documentación final del proyecto.
 
 ## Autor
 
-Proyecto desarrollado por Luis Melero como aplicación Android y proyecto académico.
+Proyecto desarrollado por Luis como aplicación Android de gestión de partidas de dardos.

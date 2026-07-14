@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import adapters.ClasificacionResultadoAdapter;
 import modelos.ResultadoJugador;
 
+import androidx.activity.OnBackPressedCallback;
+
 public class ResultadoActivity extends AppCompatActivity {
 
-    //Claves del Intent ------------------------------------------------------------
+    //Claves del Intent de ResultadoActivity ---------------------------------------
 
     public static final String EXTRA_MODO_JUEGO =
             "resultado_modo_juego";
@@ -57,6 +59,23 @@ public class ResultadoActivity extends AppCompatActivity {
 
     public static final String EXTRA_INDICES_ORIGINALES =
             "resultado_indices_originales";
+
+    //Claves de entrada para iniciar una nueva partida ------------------------------
+
+    private static final String EXTRA_ENTRADA_MODO_JUEGO =
+            "modoJuego";
+
+    private static final String EXTRA_ENTRADA_MAX_RONDAS =
+            "maxRondas";
+
+    private static final String EXTRA_ENTRADA_NUMERO_JUGADORES =
+            "numeroJugadores";
+
+    private static final String EXTRA_ENTRADA_NOMBRES_JUGADORES =
+            "nombresJugadores";
+
+    private static final String EXTRA_ENTRADA_COLOR_JUGADOR =
+            "colorJugador";
 
     //Datos generales recibidos ----------------------------------------------------
 
@@ -116,6 +135,7 @@ public class ResultadoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_resultado);
 
         iniciarElementos();
+        configurarBotonAtras();
         recibirDatosIntent();
 
         if (!validarDatosRecibidos()) {
@@ -128,7 +148,6 @@ public class ResultadoActivity extends AppCompatActivity {
         configurarListeners();
         actualizarPantalla();
 
-        //Ejecutar la animación cuando ya se han cargado los datos
         mostrarAnimacionResultado();
     }
 
@@ -557,28 +576,23 @@ public class ResultadoActivity extends AppCompatActivity {
         );
     }
 
-//Mostrar animación del resultado ----------------------------------------------
+    //Mostrar animación del resultado ----------------------------------------------
 
     private void mostrarAnimacionResultado() {
 
-        //Estado inicial del trofeo
         imgTrofeo.setScaleX(0f);
         imgTrofeo.setScaleY(0f);
         imgTrofeo.setAlpha(0f);
 
-        //Estado inicial de la información del ganador
         filaGanador.setAlpha(0f);
         filaGanador.setTranslationY(30f);
 
-        //Estado inicial de la clasificación
         contenedorClasificacion.setAlpha(0f);
         contenedorClasificacion.setTranslationY(30f);
 
-        //Estado inicial de los botones
         contenedorBotonesResultado.setAlpha(0f);
         contenedorBotonesResultado.setTranslationY(30f);
 
-        //Animación del trofeo
         imgTrofeo.animate()
                 .scaleX(1f)
                 .scaleY(1f)
@@ -587,25 +601,21 @@ public class ResultadoActivity extends AppCompatActivity {
                 .setInterpolator(
                         new DecelerateInterpolator()
                 )
-                .withEndAction(() -> {
-
-                    //Después aparece el ganador
-                    filaGanador.animate()
-                            .alpha(1f)
-                            .translationY(0f)
-                            .setDuration(800)
-                            .setInterpolator(
-                                    new DecelerateInterpolator()
-                            )
-                            .withEndAction(
-                                    this::mostrarClasificacionAnimada
-                            )
-                            .start();
-                })
+                .withEndAction(() -> filaGanador.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(800)
+                        .setInterpolator(
+                                new DecelerateInterpolator()
+                        )
+                        .withEndAction(
+                                this::mostrarClasificacionAnimada
+                        )
+                        .start())
                 .start();
     }
 
-//Mostrar clasificación y botones de forma animada -----------------------------
+    //Mostrar clasificación y botones de forma animada -----------------------------
 
     private void mostrarClasificacionAnimada() {
 
@@ -630,7 +640,7 @@ public class ResultadoActivity extends AppCompatActivity {
         }
     }
 
-//Mostrar botones de forma animada ---------------------------------------------
+    //Mostrar botones de forma animada ---------------------------------------------
 
     private void mostrarBotonesAnimados() {
 
@@ -676,11 +686,223 @@ public class ResultadoActivity extends AppCompatActivity {
 
     private void realizarRevancha() {
 
-        Toast.makeText(
-                this,
-                "La revancha se implementará más adelante",
-                Toast.LENGTH_SHORT
-        ).show();
+        if (nombresJugadores == null ||
+                nombresJugadores.isEmpty()) {
+
+            Toast.makeText(
+                    this,
+                    "No se puede iniciar la revancha",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        Intent intentRevancha =
+                crearIntentRevancha();
+
+        if (intentRevancha == null) {
+
+            Toast.makeText(
+                    this,
+                    "No se reconoce el modo de juego",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        ArrayList<String> nombresRevancha =
+                reconstruirNombresOrdenOriginal();
+
+        ArrayList<Integer> coloresRevancha =
+                reconstruirColoresOrdenOriginal();
+
+        intentRevancha.putExtra(
+                EXTRA_ENTRADA_MODO_JUEGO,
+                modoJuego
+        );
+
+        intentRevancha.putExtra(
+                EXTRA_ENTRADA_MAX_RONDAS,
+                maxRondas
+        );
+
+        intentRevancha.putExtra(
+                EXTRA_ENTRADA_NUMERO_JUGADORES,
+                nombresRevancha.size()
+        );
+
+        intentRevancha.putStringArrayListExtra(
+                EXTRA_ENTRADA_NOMBRES_JUGADORES,
+                nombresRevancha
+        );
+
+        intentRevancha.putIntegerArrayListExtra(
+                EXTRA_ENTRADA_COLOR_JUGADOR,
+                coloresRevancha
+        );
+
+        startActivity(intentRevancha);
+        finish();
+    }
+
+    //Crear Intent de revancha según el modo ---------------------------------------
+
+    private Intent crearIntentRevancha() {
+
+        String modo =
+                modoJuego.trim();
+
+        if (modo.equalsIgnoreCase("301") ||
+                modo.equalsIgnoreCase("501")) {
+
+            return new Intent(
+                    ResultadoActivity.this,
+                    PartidaPuntosActivity.class
+            );
+        }
+
+        if (modo.equalsIgnoreCase("Cricket") ||
+                modo.equalsIgnoreCase("Cut Throat Cricket")) {
+
+            return new Intent(
+                    ResultadoActivity.this,
+                    PartidaCriquetActivity.class
+            );
+        }
+
+        if (modo.equalsIgnoreCase("Double Down") ||
+                modo.equalsIgnoreCase("Around the Clock") ||
+                modo.equalsIgnoreCase("Round the Clock")) {
+
+            return new Intent(
+                    ResultadoActivity.this,
+                    PartidaRondasActivity.class
+            );
+        }
+
+        return null;
+    }
+
+    //Reconstruir nombres en el orden original -------------------------------------
+
+    private ArrayList<String> reconstruirNombresOrdenOriginal() {
+
+        ArrayList<String> nombresOrdenOriginal =
+                crearListaNombresPorDefecto();
+
+        for (int i = 0;
+             i < nombresJugadores.size();
+             i++) {
+
+            int indiceOriginal =
+                    obtenerIndiceOriginalSeguro(i);
+
+            if (indiceOriginal >= 0 &&
+                    indiceOriginal < nombresOrdenOriginal.size()) {
+
+                nombresOrdenOriginal.set(
+                        indiceOriginal,
+                        nombresJugadores.get(i)
+                );
+            }
+        }
+
+        return nombresOrdenOriginal;
+    }
+
+    //Reconstruir colores en el orden original -------------------------------------
+
+    private ArrayList<Integer> reconstruirColoresOrdenOriginal() {
+
+        ArrayList<Integer> coloresOrdenOriginal =
+                crearListaColoresPorDefecto();
+
+        for (int i = 0;
+             i < coloresJugadores.size();
+             i++) {
+
+            int indiceOriginal =
+                    obtenerIndiceOriginalSeguro(i);
+
+            if (indiceOriginal >= 0 &&
+                    indiceOriginal < coloresOrdenOriginal.size()) {
+
+                coloresOrdenOriginal.set(
+                        indiceOriginal,
+                        coloresJugadores.get(i)
+                );
+            }
+        }
+
+        return coloresOrdenOriginal;
+    }
+
+    //Crear lista de nombres por defecto -------------------------------------------
+
+    private ArrayList<String> crearListaNombresPorDefecto() {
+
+        ArrayList<String> nombresOrdenOriginal =
+                new ArrayList<>();
+
+        for (int i = 0;
+             i < nombresJugadores.size();
+             i++) {
+
+            nombresOrdenOriginal.add(
+                    nombresJugadores.get(i)
+            );
+        }
+
+        return nombresOrdenOriginal;
+    }
+
+    //Crear lista de colores por defecto -------------------------------------------
+
+    private ArrayList<Integer> crearListaColoresPorDefecto() {
+
+        ArrayList<Integer> coloresOrdenOriginal =
+                new ArrayList<>();
+
+        for (int i = 0;
+             i < nombresJugadores.size();
+             i++) {
+
+            if (i < coloresJugadores.size()) {
+
+                coloresOrdenOriginal.add(
+                        coloresJugadores.get(i)
+                );
+
+            } else {
+
+                coloresOrdenOriginal.add(
+                        getColor(android.R.color.white)
+                );
+            }
+        }
+
+        return coloresOrdenOriginal;
+    }
+
+    //Obtener índice original seguro -----------------------------------------------
+
+    private int obtenerIndiceOriginalSeguro(
+            int indiceClasificacion
+    ) {
+
+        if (indicesOriginales == null ||
+                indiceClasificacion < 0 ||
+                indiceClasificacion
+                        >= indicesOriginales.size()) {
+
+            return indiceClasificacion;
+        }
+
+        return indicesOriginales.get(
+                indiceClasificacion
+        );
     }
 
     //Mostrar error al recibir datos ------------------------------------------------
@@ -715,12 +937,21 @@ public class ResultadoActivity extends AppCompatActivity {
         finish();
     }
 
-    //Evitar regresar a una partida terminada --------------------------------------
+    //Configurar botón atrás ----------------------------------------------------------
 
-    @Override
-    public void onBackPressed() {
+    private void configurarBotonAtras() {
 
-        super.onBackPressed();
-        volverMenuPrincipal();
+        getOnBackPressedDispatcher().addCallback(
+                this,
+                new OnBackPressedCallback(true) {
+
+                    @Override
+                    public void handleOnBackPressed() {
+
+                        volverMenuPrincipal();
+                    }
+                }
+        );
     }
+
 }
