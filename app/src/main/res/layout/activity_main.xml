@@ -20,10 +20,10 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/blue"
             android:elevation="4dp"
-            app:title=""
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="">
 
             <TextView
                 android:id="@+id/txtTituloToolbar"
@@ -43,17 +43,18 @@
             android:layout_height="150dp"
             android:layout_marginTop="70dp"
             android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
             android:src="@drawable/icono_diana"
-            app:layout_constraintTop_toBottomOf="@id/toolbarMain"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/toolbarMain" />
 
         <LinearLayout
             android:id="@+id/layoutBotonesMain"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="50dp"
             android:layout_marginEnd="48dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,48 +65,52 @@
                 android:id="@+id/btnContinuar"
                 style="@style/BotonPrincipal"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
+                android:layout_height="60dp"
                 android:text="@string/continuar_partida"
                 app:icon="@drawable/icono_continuar"
                 app:iconGravity="textStart"
-                app:iconPadding="10dp"
+                app:iconPadding="12dp"
+                app:iconSize="32dp"
                 app:iconTint="@null" />
 
             <Button
                 android:id="@+id/btnNuevaPartida"
                 style="@style/BotonPrincipal"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="24dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
                 android:text="@string/nueva_partida"
                 app:icon="@drawable/icono_play"
                 app:iconGravity="textStart"
-                app:iconPadding="10dp"
+                app:iconPadding="12dp"
+                app:iconSize="32dp"
                 app:iconTint="@null" />
 
             <Button
                 android:id="@+id/btnHistorialPartidas"
                 style="@style/BotonPrincipal"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="24dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
                 android:text="@string/historial_partidas"
-                app:icon="@drawable/icono_reglas_azul"
+                app:icon="@drawable/icono_historial"
                 app:iconGravity="textStart"
-                app:iconPadding="10dp"
+                app:iconPadding="12dp"
+                app:iconSize="32dp"
                 app:iconTint="@null" />
 
             <Button
                 android:id="@+id/btnAjustes"
                 style="@style/BotonPrincipal"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="24dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
                 android:text="@string/ajustes"
-                app:icon="@android:drawable/ic_menu_manage"
+                app:icon="@drawable/icono_ajustes"
                 app:iconGravity="textStart"
-                app:iconPadding="10dp"
-                app:iconTint="@color/blue" />
+                app:iconPadding="12dp"
+                app:iconSize="32dp"
+                app:iconTint="@null" />
 
         </LinearLayout>
 
@@ -117,8 +122,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/blue"
+        app:headerLayout="@layout/header_menu_lateral"
         app:itemIconTint="@null"
         app:itemTextColor="@color/gold"
-        app:headerLayout="@layout/header_menu_lateral"
         app:menu="@menu/menu_lateral" />
+
 </androidx.drawerlayout.widget.DrawerLayout>
