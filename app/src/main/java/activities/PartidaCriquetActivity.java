@@ -19,6 +19,10 @@ import androidx.core.content.ContextCompat;
 
 import com.productos.juegosdedardos.R;
 
+import modelos.EstadoPartidaCriquet;
+import modelos.PartidaEnCurso;
+import preferencias.GestorPartidaEnCurso;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +54,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     public static final String EXTRA_JUGADOR = "jugador";
     public static final String EXTRA_NOMBRES_JUGADORES = "nombresJugadores";
     public static final String EXTRA_COLOR_JUGADOR = "colorJugador";
+    public static final String EXTRA_REANUDAR_PARTIDA = "reanudarPartida";
 
     /*
      * Datos específicos de Cricket. ResultadoActivity puede ignorarlos
@@ -112,6 +117,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private int multiplicadorSeleccionado;
 
     private boolean partidaFinalizada;
+    private boolean partidaCargadaCorrectamente;
 
     private final String[] tiradasTurno = {"", "", ""};
 
@@ -194,13 +200,43 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_partida_criquet);
 
         inicializarVistas();
-        recibirDatosPartida();
-        inicializarPartida();
-        crearMarcadorJugadores();
         configurarListeners();
         configurarBotonAtras();
 
+        boolean reanudarPartida =
+                getIntent().getBooleanExtra(
+                        EXTRA_REANUDAR_PARTIDA,
+                        false
+                );
+
+        if (reanudarPartida) {
+
+            partidaCargadaCorrectamente =
+                    cargarPartidaGuardada();
+
+            if (!partidaCargadaCorrectamente) {
+
+                Toast.makeText(
+                        this,
+                        "No se ha podido recuperar la partida guardada",
+                        Toast.LENGTH_LONG
+                ).show();
+
+                volverMainActivity();
+                return;
+            }
+
+        } else {
+
+            recibirDatosPartida();
+            inicializarPartida();
+
+            partidaCargadaCorrectamente = true;
+        }
+
+        crearMarcadorJugadores();
         actualizarInterfazCompleta();
+        guardarPartidaEnCurso();
     }
 
     // Inicialización de vistas -------------------------------------------------
@@ -493,6 +529,518 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                         ][OBJETIVOS.length];
     }
 
+
+    //Guardado persistente --------------------------------------------------------
+
+    private void guardarPartidaEnCurso() {
+
+        if (!partidaCargadaCorrectamente
+                || partidaFinalizada
+                || nombresJugadores == null
+                || nombresJugadores.length == 0) {
+
+            return;
+        }
+
+        PartidaEnCurso partida =
+                new PartidaEnCurso();
+
+        partida.setTipoPartida(
+                PartidaEnCurso.TIPO_CRIQUET
+        );
+
+        partida.setModoJuego(modoJuego);
+
+        partida.setNombresJugadores(
+                new ArrayList<>(
+                        Arrays.asList(nombresJugadores)
+                )
+        );
+
+        partida.setNumeroJugadores(
+                nombresJugadores.length
+        );
+
+        partida.setJugadorActual(
+                jugadorActual
+        );
+
+        partida.setRondaActual(
+                rondaActual
+        );
+
+        ArrayList<Integer> colores =
+                convertirArrayIntALista(
+                        coloresJugadores
+                );
+
+        partida.setColoresJugadores(
+                new ArrayList<>(colores)
+        );
+
+        EstadoPartidaCriquet estado =
+                new EstadoPartidaCriquet();
+
+        estado.setMaxRondas(maxRondas);
+
+        estado.setColoresJugadores(
+                colores
+        );
+
+        estado.setPuntuacionesJugadores(
+                convertirArrayIntALista(
+                        puntuacionesJugadores
+                )
+        );
+
+        estado.setMarcasJugadores(
+                convertirMatrizALista(
+                        marcasJugadores
+                )
+        );
+
+        estado.setNumeroDardo(
+                numeroDardo
+        );
+
+        estado.setMultiplicadorSeleccionado(
+                multiplicadorSeleccionado
+        );
+
+        estado.setTiradasTurno(
+                new ArrayList<>(
+                        Arrays.asList(tiradasTurno)
+                )
+        );
+
+        estado.setHistorialEstados(
+                construirHistorialGuardado()
+        );
+
+        partida.setEstadoCriquet(estado);
+
+        GestorPartidaEnCurso.guardarPartida(
+                this,
+                partida
+        );
+    }
+
+    //Carga persistente -----------------------------------------------------------
+
+    private boolean cargarPartidaGuardada() {
+
+        PartidaEnCurso partida =
+                GestorPartidaEnCurso.cargarPartida(this);
+
+        if (partida == null
+                || !PartidaEnCurso.TIPO_CRIQUET.equals(
+                partida.getTipoPartida()
+        )
+                || partida.getEstadoCriquet() == null
+                || partida.getNombresJugadores() == null
+                || partida.getNombresJugadores().size()
+                < MIN_JUGADORES) {
+
+            return false;
+        }
+
+        EstadoPartidaCriquet estado =
+                partida.getEstadoCriquet();
+
+        modoJuego = partida.getModoJuego();
+        modoCriquet = interpretarModoJuego(modoJuego);
+
+        int numeroJugadores =
+                Math.min(
+                        partida.getNombresJugadores().size(),
+                        MAX_JUGADORES
+                );
+
+        nombresJugadores =
+                partida.getNombresJugadores()
+                        .subList(
+                                0,
+                                numeroJugadores
+                        )
+                        .toArray(new String[0]);
+
+        normalizarNombresJugadores();
+
+        maxRondas =
+                estado.getMaxRondas() > 0
+                        ? estado.getMaxRondas()
+                        : 15;
+
+        jugadorActual =
+                Math.max(
+                        0,
+                        Math.min(
+                                partida.getJugadorActual(),
+                                numeroJugadores - 1
+                        )
+                );
+
+        rondaActual =
+                Math.max(
+                        1,
+                        partida.getRondaActual()
+                );
+
+        numeroDardo =
+                Math.max(
+                        1,
+                        Math.min(
+                                estado.getNumeroDardo(),
+                                DARDOS_POR_TURNO
+                        )
+                );
+
+        multiplicadorSeleccionado =
+                Math.max(
+                        1,
+                        Math.min(
+                                estado.getMultiplicadorSeleccionado(),
+                                3
+                        )
+                );
+
+        ArrayList<Integer> coloresGuardados =
+                estado.getColoresJugadores();
+
+        if (coloresGuardados == null
+                || coloresGuardados.isEmpty()) {
+
+            coloresGuardados =
+                    partida.getColoresJugadores();
+        }
+
+        coloresJugadores =
+                convertirListaAArrayInt(
+                        coloresGuardados,
+                        numeroJugadores,
+                        Color.WHITE
+                );
+
+        puntuacionesJugadores =
+                convertirListaAArrayInt(
+                        estado.getPuntuacionesJugadores(),
+                        numeroJugadores,
+                        0
+                );
+
+        marcasJugadores =
+                convertirListaAMatriz(
+                        estado.getMarcasJugadores(),
+                        numeroJugadores,
+                        OBJETIVOS.length
+                );
+
+        Arrays.fill(tiradasTurno, "");
+
+        if (estado.getTiradasTurno() != null) {
+
+            int limite =
+                    Math.min(
+                            tiradasTurno.length,
+                            estado.getTiradasTurno().size()
+                    );
+
+            for (int i = 0; i < limite; i++) {
+
+                String valor =
+                        estado.getTiradasTurno().get(i);
+
+                tiradasTurno[i] =
+                        valor == null ? "" : valor;
+            }
+        }
+
+        historialEstados.clear();
+        restaurarHistorialEstados(
+                estado.getHistorialEstados()
+        );
+
+        txtNombresJugadores =
+                new TextView[numeroJugadores];
+
+        txtPuntosJugadores =
+                new TextView[numeroJugadores];
+
+        txtMarcasJugadores =
+                new TextView[
+                        numeroJugadores
+                        ][OBJETIVOS.length];
+
+        partidaFinalizada = false;
+
+        return true;
+    }
+
+    //Conversión del historial ----------------------------------------------------
+
+    private ArrayList<EstadoPartidaCriquet.EstadoDeshacerCriquet>
+    construirHistorialGuardado() {
+
+        ArrayList<EstadoPartidaCriquet.EstadoDeshacerCriquet> resultado =
+                new ArrayList<>();
+
+        for (EstadoPartida estado :
+                historialEstados) {
+
+            EstadoPartidaCriquet.EstadoDeshacerCriquet guardado =
+                    new EstadoPartidaCriquet.EstadoDeshacerCriquet();
+
+            guardado.setMarcasJugadores(
+                    convertirMatrizALista(
+                            estado.marcasJugadores
+                    )
+            );
+
+            guardado.setPuntuacionesJugadores(
+                    convertirArrayIntALista(
+                            estado.puntuacionesJugadores
+                    )
+            );
+
+            guardado.setJugadorActual(
+                    estado.jugadorActual
+            );
+
+            guardado.setRondaActual(
+                    estado.rondaActual
+            );
+
+            guardado.setNumeroDardo(
+                    estado.numeroDardo
+            );
+
+            guardado.setMultiplicadorSeleccionado(
+                    estado.multiplicadorSeleccionado
+            );
+
+            guardado.setTiradasTurno(
+                    new ArrayList<>(
+                            Arrays.asList(
+                                    estado.tiradasTurno
+                            )
+                    )
+            );
+
+            resultado.add(guardado);
+        }
+
+        return resultado;
+    }
+
+    private void restaurarHistorialEstados(
+            ArrayList<EstadoPartidaCriquet.EstadoDeshacerCriquet> estados
+    ) {
+
+        if (estados == null) {
+            return;
+        }
+
+        for (EstadoPartidaCriquet.EstadoDeshacerCriquet guardado :
+                estados) {
+
+            if (guardado == null) {
+                continue;
+            }
+
+            historialEstados.addLast(
+                    new EstadoPartida(
+                            convertirListaAMatriz(
+                                    guardado.getMarcasJugadores(),
+                                    nombresJugadores.length,
+                                    OBJETIVOS.length
+                            ),
+                            convertirListaAArrayInt(
+                                    guardado.getPuntuacionesJugadores(),
+                                    nombresJugadores.length,
+                                    0
+                            ),
+                            guardado.getJugadorActual(),
+                            guardado.getRondaActual(),
+                            guardado.getNumeroDardo(),
+                            guardado.getMultiplicadorSeleccionado(),
+                            convertirListaAArrayString(
+                                    guardado.getTiradasTurno(),
+                                    DARDOS_POR_TURNO
+                            )
+                    )
+            );
+        }
+    }
+
+    //Métodos auxiliares de conversión -------------------------------------------
+
+    private ArrayList<Integer> convertirArrayIntALista(
+            int[] valores
+    ) {
+
+        ArrayList<Integer> resultado =
+                new ArrayList<>();
+
+        if (valores != null) {
+
+            for (int valor : valores) {
+                resultado.add(valor);
+            }
+        }
+
+        return resultado;
+    }
+
+    private ArrayList<ArrayList<Integer>> convertirMatrizALista(
+            int[][] matriz
+    ) {
+
+        ArrayList<ArrayList<Integer>> resultado =
+                new ArrayList<>();
+
+        if (matriz == null) {
+            return resultado;
+        }
+
+        for (int[] fila : matriz) {
+
+            resultado.add(
+                    convertirArrayIntALista(fila)
+            );
+        }
+
+        return resultado;
+    }
+
+    private int[] convertirListaAArrayInt(
+            ArrayList<Integer> valores,
+            int tamano,
+            int valorPorDefecto
+    ) {
+
+        int[] resultado =
+                new int[tamano];
+
+        Arrays.fill(
+                resultado,
+                valorPorDefecto
+        );
+
+        if (valores == null) {
+            return resultado;
+        }
+
+        int limite =
+                Math.min(
+                        valores.size(),
+                        tamano
+                );
+
+        for (int i = 0; i < limite; i++) {
+
+            Integer valor =
+                    valores.get(i);
+
+            if (valor != null) {
+                resultado[i] = valor;
+            }
+        }
+
+        return resultado;
+    }
+
+    private int[][] convertirListaAMatriz(
+            ArrayList<ArrayList<Integer>> valores,
+            int filas,
+            int columnas
+    ) {
+
+        int[][] resultado =
+                new int[filas][columnas];
+
+        if (valores == null) {
+            return resultado;
+        }
+
+        int limiteFilas =
+                Math.min(
+                        valores.size(),
+                        filas
+                );
+
+        for (int fila = 0;
+             fila < limiteFilas;
+             fila++) {
+
+            ArrayList<Integer> valoresFila =
+                    valores.get(fila);
+
+            if (valoresFila == null) {
+                continue;
+            }
+
+            int limiteColumnas =
+                    Math.min(
+                            valoresFila.size(),
+                            columnas
+                    );
+
+            for (int columna = 0;
+                 columna < limiteColumnas;
+                 columna++) {
+
+                Integer valor =
+                        valoresFila.get(columna);
+
+                if (valor != null) {
+
+                    resultado[fila][columna] =
+                            Math.max(
+                                    0,
+                                    Math.min(
+                                            valor,
+                                            MARCAS_PARA_CERRAR
+                                    )
+                            );
+                }
+            }
+        }
+
+        return resultado;
+    }
+
+    private String[] convertirListaAArrayString(
+            ArrayList<String> valores,
+            int tamano
+    ) {
+
+        String[] resultado =
+                new String[tamano];
+
+        Arrays.fill(resultado, "");
+
+        if (valores == null) {
+            return resultado;
+        }
+
+        int limite =
+                Math.min(
+                        valores.size(),
+                        tamano
+                );
+
+        for (int i = 0; i < limite; i++) {
+
+            String valor =
+                    valores.get(i);
+
+            resultado[i] =
+                    valor == null ? "" : valor;
+        }
+
+        return resultado;
+    }
+
     // Creación del marcador ----------------------------------------------------
 
     private void crearMarcadorJugadores() {
@@ -720,6 +1268,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
         multiplicadorSeleccionado = multiplicador;
         actualizarMultiplicadores();
+        guardarPartidaEnCurso();
     }
 
     // Registro de dardos -------------------------------------------------------
@@ -780,6 +1329,11 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         if (indiceGanador != -1) {
 
             partidaFinalizada = true;
+
+            GestorPartidaEnCurso.eliminarPartida(
+                    this
+            );
+
             actualizarInterfazCompleta();
             abrirResultadoActivity(indiceGanador);
 
@@ -816,6 +1370,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
             numeroDardo++;
             actualizarInterfazCompleta();
+            guardarPartidaEnCurso();
 
         } else {
 
@@ -975,12 +1530,18 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                     obtenerGanadorPorLimiteRondas();
 
             partidaFinalizada = true;
+
+            GestorPartidaEnCurso.eliminarPartida(
+                    this
+            );
+
             abrirResultadoActivity(indiceGanador);
 
             return;
         }
 
         actualizarInterfazCompleta();
+        guardarPartidaEnCurso();
     }
 
     private int obtenerGanadorPorLimiteRondas() {
@@ -1167,6 +1728,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         );
 
         actualizarInterfazCompleta();
+        guardarPartidaEnCurso();
     }
 
     private int[][] copiarMatriz(int[][] matrizOriginal) {
@@ -1825,15 +2387,32 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Salir de la partida")
                 .setMessage(
-                        "¿Quieres abandonar la partida actual?"
+                        "Puedes conservar la partida para continuarla "
+                                + "más adelante o abandonarla definitivamente."
                 )
                 .setPositiveButton(
-                        "SALIR",
-                        (dialog, which) ->
-                                volverMainActivity()
+                        "Guardar y salir",
+                        (dialog, which) -> {
+
+                            guardarPartidaEnCurso();
+                            volverMainActivity();
+                        }
+                )
+                .setNeutralButton(
+                        "Abandonar partida",
+                        (dialog, which) -> {
+
+                            partidaFinalizada = true;
+
+                            GestorPartidaEnCurso.eliminarPartida(
+                                    this
+                            );
+
+                            volverMainActivity();
+                        }
                 )
                 .setNegativeButton(
-                        "CANCELAR",
+                        "Cancelar",
                         null
                 )
                 .show();
@@ -1854,6 +2433,20 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
         startActivity(intent);
         finish();
+    }
+
+
+    //Guardado de seguridad -------------------------------------------------------
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (partidaCargadaCorrectamente
+                && !partidaFinalizada) {
+
+            guardarPartidaEnCurso();
+        }
     }
 
     private int convertirDp(int dp) {
