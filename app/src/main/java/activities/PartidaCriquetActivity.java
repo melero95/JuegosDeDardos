@@ -2213,6 +2213,9 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                 ResultadoActivity.class
         );
 
+        intent.putExtra(ResultadoActivity.EXTRA_ORDEN_ALEATORIO,
+                getIntent().getBooleanExtra(ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false));
+
         // Datos generales de la partida
         intent.putExtra(
                 ResultadoActivity.EXTRA_MODO_JUEGO,

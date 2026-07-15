@@ -136,6 +136,37 @@
             android:layout_marginTop="12dp"
             android:text="Usar última configuración" />
 
+        <Button
+            android:id="@+id/btnMostrarAjustesAvanzados"
+            style="@style/BotonPrincipal"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Más ajustes ▼"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/contenedorAjustesAvanzados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <Switch android:id="@+id/switchCierreDoble" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="Cerrar la partida con un doble"
+                android:textColor="@android:color/white" />
+            <TextView android:id="@+id/txtTituloNumeroDardos" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="12dp"
+                android:text="Dardos por turno" android:textColor="@color/gold" android:textStyle="bold" />
+            <Spinner android:id="@+id/spnNumeroDardos" android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <Switch android:id="@+id/switchOrdenAleatorio" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="12dp"
+                android:text="Orden de jugadores aleatorio" android:textColor="@android:color/white" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <Button

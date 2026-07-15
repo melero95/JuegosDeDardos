@@ -73,7 +73,7 @@ public class ClasificacionResultadoAdapter
 
         } else {
 
-            holder.imgMedalla.setVisibility(View.GONE);
+            holder.imgMedalla.setVisibility(View.INVISIBLE);
             holder.imgMedalla.setImageDrawable(null);
             holder.imgMedalla.setContentDescription(null);
         }

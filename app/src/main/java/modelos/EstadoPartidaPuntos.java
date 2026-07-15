@@ -8,6 +8,9 @@ public class EstadoPartidaPuntos {
 
     private int puntuacionInicial;
     private int maxRondas;
+    private int numeroDardosTurno = 3;
+    private boolean cierreDoble;
+    private boolean ordenAleatorio;
 
     //Estado general --------------------------------------------------------------
 
@@ -62,6 +65,13 @@ public class EstadoPartidaPuntos {
     public void setMaxRondas(int maxRondas) {
         this.maxRondas = maxRondas;
     }
+
+    public int getNumeroDardosTurno() { return numeroDardosTurno; }
+    public void setNumeroDardosTurno(int numeroDardosTurno) { this.numeroDardosTurno = numeroDardosTurno; }
+    public boolean isCierreDoble() { return cierreDoble; }
+    public void setCierreDoble(boolean cierreDoble) { this.cierreDoble = cierreDoble; }
+    public boolean isOrdenAleatorio() { return ordenAleatorio; }
+    public void setOrdenAleatorio(boolean ordenAleatorio) { this.ordenAleatorio = ordenAleatorio; }
 
     public ArrayList<Integer> getPuntuacionesJugadores() {
         return puntuacionesJugadores;

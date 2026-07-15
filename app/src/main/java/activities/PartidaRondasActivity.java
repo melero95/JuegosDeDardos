@@ -790,8 +790,8 @@ public class PartidaRondasActivity extends AppCompatActivity {
                         ? estado.getMaxRondas()
                         : (
                         modoRondas == ModoRondas.DOUBLE_DOWN
-                                ? RONDAS_DOUBLE_DOWN
-                                : Math.max(
+                        ? RONDAS_DOUBLE_DOWN
+                        : Math.max(
                                 2,
                                 ultimoNumeroAroundClock + 1
                         )
@@ -2366,6 +2366,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
                 PartidaRondasActivity.this,
                 ResultadoActivity.class
         );
+
+        intent.putExtra(ResultadoActivity.EXTRA_ORDEN_ALEATORIO,
+                getIntent().getBooleanExtra(ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false));
 
         intent.putExtra(
                 ResultadoActivity.EXTRA_MODO_JUEGO,

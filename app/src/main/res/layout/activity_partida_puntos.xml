@@ -597,6 +597,19 @@
                                     android:scaleType="centerInside"
                                     android:src="@drawable/icono_dardo" />
 
+                                <ImageView
+                                    android:id="@+id/imgDardo4"
+                                    android:layout_width="26dp"
+                                    android:layout_height="26dp"
+                                    android:layout_marginStart="2dp"
+                                    android:alpha="0.35"
+                                    android:background="#CC101820"
+                                    android:contentDescription="Dardo 4"
+                                    android:padding="4dp"
+                                    android:scaleType="centerInside"
+                                    android:src="@drawable/icono_dardo"
+                                    android:visibility="gone" />
+
                             </LinearLayout>
 
                             <TextView

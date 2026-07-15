@@ -61,7 +61,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     public static final String EXTRA_INDICES_ORIGINALES =
             "resultado_indices_originales";
 
-    //Motivos de finalización ----------------------------------------------------
+    //Motivos de finalizaciÃ³n ----------------------------------------------------
 
     public static final String MOTIVO_GANADOR =
             "ganador";
@@ -74,16 +74,19 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
     //Constantes generales --------------------------------------------------------
 
-    private static final int MAX_DARDOS_TURNO = 3;
+    private static final int CAPACIDAD_MAX_DARDOS = 4;
     private static final int MAX_JUGADORES = 6;
 
-    //Configuración de la partida -------------------------------------------------
+    //ConfiguraciÃ³n de la partida -------------------------------------------------
 
     private String modoJuego;
 
     private int numeroJugadores;
     private int puntuacionInicial;
     private int maxRondas;
+    private int numeroDardosTurno = 3;
+    private boolean cierreDoble;
+    private boolean ordenAleatorio;
 
     private ArrayList<String> nombresJugadores;
 
@@ -100,7 +103,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private boolean partidaFinalizada;
     private boolean partidaCargadaCorrectamente;
 
-    //Orden de finalización de los jugadores --------------------
+    //Orden de finalizaciÃ³n de los jugadores --------------------
 
     private final ArrayList<Integer> ordenFinalizacion =
             new ArrayList<>();
@@ -111,10 +114,10 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private int puntosTurnoActual;
 
     private final int[] puntosDardos =
-            new int[MAX_DARDOS_TURNO];
+            new int[CAPACIDAD_MAX_DARDOS];
 
     private final String[] textosDardos =
-            new String[MAX_DARDOS_TURNO];
+            new String[CAPACIDAD_MAX_DARDOS];
 
     //Historial temporal ----------------------------------------------------------
 
@@ -126,7 +129,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private final Deque<EstadoPartida> historialEstados =
             new ArrayDeque<>();
 
-    //Información general ---------------------------------------------------------
+    //InformaciÃ³n general ---------------------------------------------------------
 
     private TextView txtModoJuego;
     private TextView txtJugadorActual;
@@ -134,7 +137,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private TextView txtRondaActual;
     private TextView txtMaxRondas;
 
-    //Información del turno -------------------------------------------------------
+    //InformaciÃ³n del turno -------------------------------------------------------
 
     private TextView txtNumeroDardos;
 
@@ -145,6 +148,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private ImageView imgDardo1;
     private ImageView imgDardo2;
     private ImageView imgDardo3;
+    private ImageView imgDardo4;
 
     //Marcador central ------------------------------------------------------------
 
@@ -180,12 +184,12 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private Button btnVerMarcador;
     private Button btnSalirPartida;
 
-    //Botones de puntuación -------------------------------------------------------
+    //Botones de puntuaciÃ³n -------------------------------------------------------
 
     private final Button[] botonesPuntuacion =
             new Button[20];
 
-    //Control de animación del cambio de turno --------------------------------------
+    //Control de animaciÃ³n del cambio de turno --------------------------------------
 
     private boolean animacionCambioTurnoActiva = false;
 
@@ -238,7 +242,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         actualizarInterfazCompleta();
     }
 
-    //Inicialización de vistas ----------------------------------------------------
+    //InicializaciÃ³n de vistas ----------------------------------------------------
 
     private void inicializarVistas() {
 
@@ -257,6 +261,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         imgDardo1 = findViewById(R.id.imgDardo1);
         imgDardo2 = findViewById(R.id.imgDardo2);
         imgDardo3 = findViewById(R.id.imgDardo3);
+        imgDardo4 = findViewById(R.id.imgDardo4);
 
         txtNombreJugadorActual =
                 findViewById(R.id.txtNombreJugadorActual);
@@ -264,7 +269,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionJugadorActual =
                 findViewById(R.id.txtPuntuacionJugadorActual);
 
-        //Jugador 1: columna izquierda, primera posición --------------------
+        //Jugador 1: columna izquierda, primera posiciÃ³n --------------------
 
         panelesJugadores[0] =
                 findViewById(R.id.tarjetaJugador1);
@@ -275,7 +280,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionesJugadores[0] =
                 findViewById(R.id.txtPuntuacionJugador1);
 
-        //Jugador 2: columna derecha, primera posición --------------------
+        //Jugador 2: columna derecha, primera posiciÃ³n --------------------
 
         panelesJugadores[1] =
                 findViewById(R.id.tarjetaJugador3);
@@ -286,7 +291,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionesJugadores[1] =
                 findViewById(R.id.txtPuntuacionJugador3);
 
-        //Jugador 3: columna izquierda, segunda posición --------------------
+        //Jugador 3: columna izquierda, segunda posiciÃ³n --------------------
 
         panelesJugadores[2] =
                 findViewById(R.id.tarjetaJugador2);
@@ -297,7 +302,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionesJugadores[2] =
                 findViewById(R.id.txtPuntuacionJugador2);
 
-        //Jugador 4: columna derecha, segunda posición --------------------
+        //Jugador 4: columna derecha, segunda posiciÃ³n --------------------
 
         panelesJugadores[3] =
                 findViewById(R.id.tarjetaJugador4);
@@ -308,7 +313,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionesJugadores[3] =
                 findViewById(R.id.txtPuntuacionJugador4);
 
-        //Jugador 5: columna izquierda, tercera posición --------------------
+        //Jugador 5: columna izquierda, tercera posiciÃ³n --------------------
 
         panelesJugadores[4] =
                 findViewById(R.id.tarjetaJugador5);
@@ -319,7 +324,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         txtPuntuacionesJugadores[4] =
                 findViewById(R.id.txtPuntuacionJugador5);
 
-        //Jugador 6: columna derecha, tercera posición --------------------
+        //Jugador 6: columna derecha, tercera posiciÃ³n --------------------
 
         panelesJugadores[5] =
                 findViewById(R.id.tarjetaJugador6);
@@ -374,7 +379,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         botonesPuntuacion[19] = findViewById(R.id.btn20);
     }
 
-    //Recepción de datos ----------------------------------------------------------
+    //RecepciÃ³n de datos ----------------------------------------------------------
 
     private void recibirDatosPartida() {
 
@@ -384,6 +389,14 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 EXTRA_MAX_RONDAS,
                 15
         );
+
+        numeroDardosTurno = Math.max(1, Math.min(4, getIntent().getIntExtra(
+                ConfigurarNuevaPartidaActivity.EXTRA_NUMERO_DARDOS, 3)));
+        cierreDoble = getIntent().getBooleanExtra(
+                ConfigurarNuevaPartidaActivity.EXTRA_CIERRE_DOBLE, false);
+        ordenAleatorio = getIntent().getBooleanExtra(
+                ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false);
+        imgDardo4.setVisibility(numeroDardosTurno == 4 ? View.VISIBLE : View.GONE);
 
         nombresJugadores = getIntent().getStringArrayListExtra(
                 EXTRA_NOMBRES_JUGADORES
@@ -470,6 +483,9 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
 
         estado.setMaxRondas(maxRondas);
+        estado.setNumeroDardosTurno(numeroDardosTurno);
+        estado.setCierreDoble(cierreDoble);
+        estado.setOrdenAleatorio(ordenAleatorio);
 
         estado.setPuntuacionesJugadores(
                 convertirArrayIntALista(
@@ -589,6 +605,11 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                         ? estado.getMaxRondas()
                         : 15;
 
+        numeroDardosTurno = Math.max(1, Math.min(4, estado.getNumeroDardosTurno()));
+        cierreDoble = estado.isCierreDoble();
+        ordenAleatorio = estado.isOrdenAleatorio();
+        imgDardo4.setVisibility(numeroDardosTurno == 4 ? View.VISIBLE : View.GONE);
+
         jugadorActual =
                 Math.max(
                         0,
@@ -656,7 +677,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                         0,
                         Math.min(
                                 estado.getDardoActual(),
-                                MAX_DARDOS_TURNO
+                                numeroDardosTurno
                         )
                 );
 
@@ -692,7 +713,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return true;
     }
 
-    //Conversión del historial de tiradas ----------------------------------------
+    //ConversiÃ³n del historial de tiradas ----------------------------------------
 
     private ArrayList<EstadoPartidaPuntos.RegistroTiradaGuardada>
     construirHistorialTiradasGuardado() {
@@ -752,7 +773,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return resultado;
     }
 
-    //Conversión de la pila usada para deshacer ----------------------------------
+    //ConversiÃ³n de la pila usada para deshacer ----------------------------------
 
     private ArrayList<EstadoPartidaPuntos.EstadoDeshacerGuardado>
     construirHistorialEstadosGuardado() {
@@ -822,7 +843,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return resultado;
     }
 
-    //Restauración del historial de tiradas --------------------------------------
+    //RestauraciÃ³n del historial de tiradas --------------------------------------
 
     private void restaurarHistorialTiradas(
             ArrayList<EstadoPartidaPuntos.RegistroTiradaGuardada> registros
@@ -846,12 +867,12 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                             guardado.getRonda(),
                             convertirListaAArrayInt(
                                     guardado.getDardos(),
-                                    MAX_DARDOS_TURNO,
+                                    numeroDardosTurno,
                                     0
                             ),
                             convertirListaAArrayString(
                                     guardado.getTextosDardos(),
-                                    MAX_DARDOS_TURNO
+                                    numeroDardosTurno
                             ),
                             guardado.getPuntosTotales(),
                             guardado.getPuntuacionAntes(),
@@ -862,7 +883,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Restauración de la pila usada para deshacer --------------------------------
+    //RestauraciÃ³n de la pila usada para deshacer --------------------------------
 
     private void restaurarHistorialEstados(
             ArrayList<EstadoPartidaPuntos.EstadoDeshacerGuardado> estados
@@ -901,12 +922,12 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                             guardado.getPuntosTurnoActual(),
                             convertirListaAArrayInt(
                                     guardado.getPuntosDardos(),
-                                    MAX_DARDOS_TURNO,
+                                    numeroDardosTurno,
                                     0
                             ),
                             convertirListaAArrayString(
                                     guardado.getTextosDardos(),
-                                    MAX_DARDOS_TURNO
+                                    numeroDardosTurno
                             ),
                             guardado.getTamanoHistorialTiradas()
                     );
@@ -915,7 +936,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Métodos auxiliares de conversión -------------------------------------------
+    //MÃ©todos auxiliares de conversiÃ³n -------------------------------------------
 
     private ArrayList<Integer> convertirArrayIntALista(
             int[] valores
@@ -1110,7 +1131,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Obtención de puntuación inicial --------------------------------------------
+    //ObtenciÃ³n de puntuaciÃ³n inicial --------------------------------------------
 
     private int obtenerPuntuacionInicial(String modo) {
 
@@ -1121,7 +1142,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return 301;
     }
 
-    //Preparación inicial ---------------------------------------------------------
+    //PreparaciÃ³n inicial ---------------------------------------------------------
 
     private void prepararPartida() {
 
@@ -1157,7 +1178,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         historialEstados.clear();
     }
 
-    //Configuración de botones ----------------------------------------------------
+    //ConfiguraciÃ³n de botones ----------------------------------------------------
 
     private void configurarListeners() {
 
@@ -1230,7 +1251,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Confirmación para salir de la partida --------------------
+    //ConfirmaciÃ³n para salir de la partida --------------------
 
     private void mostrarDialogoSalirPartida() {
 
@@ -1238,7 +1259,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 .setTitle("Salir de la partida")
                 .setMessage(
                         "Puedes conservar la partida para continuarla "
-                                + "más adelante o abandonarla definitivamente."
+                                + "mÃ¡s adelante o abandonarla definitivamente."
                 )
                 .setPositiveButton(
                         "Guardar y salir",
@@ -1268,7 +1289,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 .show();
     }
 
-    //Regreso al menú principal --------------------
+    //Regreso al menÃº principal --------------------
 
     private void volverAlMenuPrincipal() {
 
@@ -1304,7 +1325,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return 1;
     }
 
-    //Registro de un número -------------------------------------------------------
+    //Registro de un nÃºmero -------------------------------------------------------
 
     private void registrarDardo(
             int numeroCasilla,
@@ -1359,7 +1380,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Comprobación antes de registrar --------------------------------------------
+    //ComprobaciÃ³n antes de registrar --------------------------------------------
 
     private boolean sePuedeRegistrarDardo() {
 
@@ -1367,7 +1388,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             return false;
         }
 
-        if (dardoActual >= MAX_DARDOS_TURNO) {
+        if (dardoActual >= numeroDardosTurno) {
 
             Toast.makeText(
                     this,
@@ -1381,7 +1402,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return true;
     }
 
-    //Registro común de la tirada -------------------------------------------------
+    //Registro comÃºn de la tirada -------------------------------------------------
 
     private void registrarResultadoDardo(
             int puntos,
@@ -1410,10 +1431,22 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         if (puntuacionProvisional == 0) {
 
+            if (cierreDoble && !esUltimoDardoDoble()) {
+                Toast.makeText(this, "Debes cerrar con un doble", Toast.LENGTH_SHORT).show();
+                finalizarTurnoPasado(puntuacionAntes);
+                return;
+            }
+
             finalizarJugadorEnCero(
                     puntuacionAntes
             );
 
+            return;
+        }
+
+        if (cierreDoble && puntuacionProvisional == 1) {
+            Toast.makeText(this, "No puedes dejar la puntuación en 1 con cierre doble", Toast.LENGTH_SHORT).show();
+            finalizarTurnoPasado(puntuacionAntes);
             return;
         }
 
@@ -1426,7 +1459,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             return;
         }
 
-        if (dardoActual >= MAX_DARDOS_TURNO) {
+        if (dardoActual >= numeroDardosTurno) {
             finalizarTurno();
         }
     }
@@ -1451,7 +1484,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Deshacer última acción ------------------------------------------------------
+    //Deshacer Ãºltima acciÃ³n ------------------------------------------------------
 
     private void deshacerUltimaTirada() {
 
@@ -1528,7 +1561,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         guardarPartidaEnCurso();
     }
 
-    //Finalización manual del turno ----------------------------------------------
+    //FinalizaciÃ³n manual del turno ----------------------------------------------
 
     private void finalizarTurnoManual() {
 
@@ -1542,7 +1575,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         finalizarTurno();
     }
 
-    //Finalización normal del turno ----------------------------------------------
+    //FinalizaciÃ³n normal del turno ----------------------------------------------
 
     private void finalizarTurno() {
 
@@ -1580,10 +1613,22 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         if (puntuacionDespues == 0) {
 
+            if (cierreDoble && !esUltimoDardoDoble()) {
+                Toast.makeText(this, "Debes cerrar con un doble", Toast.LENGTH_SHORT).show();
+                finalizarTurnoPasado(puntuacionAntes);
+                return;
+            }
+
             finalizarJugadorEnCero(
                     puntuacionAntes
             );
 
+            return;
+        }
+
+        if (cierreDoble && puntuacionDespues == 1) {
+            Toast.makeText(this, "No puedes dejar la puntuación en 1 con cierre doble", Toast.LENGTH_SHORT).show();
+            finalizarTurnoPasado(puntuacionAntes);
             return;
         }
 
@@ -1599,7 +1644,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         cambiarTurnoConAnimacion();
     }
 
-    //Finalización del turno por exceso ------------------------------------------
+    //FinalizaciÃ³n del turno por exceso ------------------------------------------
 
     private void finalizarTurnoPasado(
             int puntuacionAntes
@@ -1621,7 +1666,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         cambiarTurnoConAnimacion();
     }
 
-    //Finalización de un jugador --------------------------------------------------
+    //FinalizaciÃ³n de un jugador --------------------------------------------------
 
     private void finalizarJugadorEnCero(
             int puntuacionAntes
@@ -1719,7 +1764,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Comprobación de jugadores finalizados --------------------------------------
+    //ComprobaciÃ³n de jugadores finalizados --------------------------------------
 
     private boolean todosLosJugadoresFinalizados() {
 
@@ -1733,7 +1778,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         return true;
     }
 
-    //Preparación del siguiente turno --------------------------------------------
+    //PreparaciÃ³n del siguiente turno --------------------------------------------
 
     private void prepararNuevoTurno() {
 
@@ -1746,7 +1791,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         grupoMultiplicadores.check(R.id.radioX1);
     }
 
-    //Finalización por máximo de rondas --------------------
+    //FinalizaciÃ³n por mÃ¡ximo de rondas --------------------
 
     private void finalizarPartidaPorRondas() {
 
@@ -1754,7 +1799,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         Toast.makeText(
                 this,
-                "Se ha alcanzado el máximo de rondas",
+                "Se ha alcanzado el mÃ¡ximo de rondas",
                 Toast.LENGTH_LONG
         ).show();
 
@@ -1763,7 +1808,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Finalización completa -------------------------------------------------------
+    //FinalizaciÃ³n completa -------------------------------------------------------
 
     private void finalizarPartida(
             String motivoFinalizacion
@@ -1816,7 +1861,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         historialTiradas.add(registro);
     }
 
-    //Cambio de turno con animación -------------------------------------------------
+    //Cambio de turno con animaciÃ³n -------------------------------------------------
 
     private void cambiarTurnoConAnimacion() {
 
@@ -1828,7 +1873,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         bloquearBotonesPartida();
 
-        //Fade out del nombre y puntuación del jugador actual
+        //Fade out del nombre y puntuaciÃ³n del jugador actual
         txtNombreJugadorActual.animate()
                 .alpha(0f)
                 .setDuration(250)
@@ -1874,7 +1919,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 .start();
     }
 
-    //Actualización completa ------------------------------------------------------
+    //ActualizaciÃ³n completa ------------------------------------------------------
 
     private void actualizarInterfazCompleta() {
 
@@ -1887,14 +1932,14 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         actualizarEstadoBotones();
     }
 
-    //Actualización del modo ------------------------------------------------------
+    //ActualizaciÃ³n del modo ------------------------------------------------------
 
     private void actualizarModoJuego() {
 
         txtModoJuego.setText(modoJuego);
     }
 
-    //Actualización provisional del marcador central --------------------
+    //ActualizaciÃ³n provisional del marcador central --------------------
 
     private void actualizarMarcadorCentralTurno() {
 
@@ -1906,7 +1951,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Actualización de paneles ----------------------------------------------------
+    //ActualizaciÃ³n de paneles ----------------------------------------------------
 
     private void actualizarPanelesJugadores() {
 
@@ -1937,7 +1982,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Actualización de marcadores -------------------------------------------------
+    //ActualizaciÃ³n de marcadores -------------------------------------------------
 
     private void actualizarMarcadores() {
 
@@ -1960,7 +2005,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Actualización del jugador actual -------------------------------------------
+    //ActualizaciÃ³n del jugador actual -------------------------------------------
 
     private void actualizarJugadorActivo() {
 
@@ -2007,7 +2052,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Actualización de ronda ------------------------------------------------------
+    //ActualizaciÃ³n de ronda ------------------------------------------------------
 
     private void actualizarRonda() {
 
@@ -2020,7 +2065,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 
-    //Actualización de la tirada --------------------------------------------------
+    //ActualizaciÃ³n de la tirada --------------------------------------------------
 
     private void actualizarInformacionTurno() {
 
@@ -2039,13 +2084,13 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         int numeroDardoMostrado =
                 Math.min(
                         dardoActual + 1,
-                        MAX_DARDOS_TURNO
+                        numeroDardosTurno
                 );
 
         txtNumeroDardos.setText(
                 numeroDardoMostrado
                         + " / "
-                        + MAX_DARDOS_TURNO
+                        + numeroDardosTurno
         );
 
         imgDardo1.setAlpha(
@@ -2060,21 +2105,31 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 dardoActual == 2 ? 1.0f : 0.35f
         );
 
-        if (dardoActual >= MAX_DARDOS_TURNO) {
+        imgDardo4.setVisibility(numeroDardosTurno == 4 ? View.VISIBLE : View.GONE);
+        imgDardo4.setAlpha(dardoActual == 3 ? 1.0f : 0.35f);
+
+        if (dardoActual >= numeroDardosTurno) {
 
             imgDardo1.setAlpha(1.0f);
             imgDardo2.setAlpha(1.0f);
             imgDardo3.setAlpha(1.0f);
+            imgDardo4.setAlpha(1.0f);
         }
 
         actualizarMarcadorCentralTurno();
     }
 
-    //Obtención del texto del dardo ----------------------------------------------
+    private boolean esUltimoDardoDoble() {
+        if (dardoActual <= 0 || dardoActual > textosDardos.length) return false;
+        String texto = textosDardos[dardoActual - 1];
+        return texto != null && texto.startsWith("D");
+    }
+
+    //ObtenciÃ³n del texto del dardo ----------------------------------------------
 
     private String obtenerTextoDardo(int posicion) {
 
-        if (posicion < 0 || posicion >= MAX_DARDOS_TURNO) {
+        if (posicion < 0 || posicion >= numeroDardosTurno) {
             return "";
         }
 
@@ -2106,7 +2161,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
 
         boolean sePuedeLanzar =
-                dardoActual < MAX_DARDOS_TURNO;
+                dardoActual < numeroDardosTurno;
 
         for (Button boton : botonesPuntuacion) {
             boton.setEnabled(sePuedeLanzar);
@@ -2340,14 +2395,14 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 .show();
     }
 
-    //Construcción de la clasificación final --------------------
+    //ConstrucciÃ³n de la clasificaciÃ³n final --------------------
 
     private ArrayList<Integer> construirClasificacionFinal() {
 
         ArrayList<Integer> clasificacion =
                 new ArrayList<>();
 
-        //Añadir primero quienes llegaron a cero --------------------
+        //AÃ±adir primero quienes llegaron a cero --------------------
 
         for (Integer indice : ordenFinalizacion) {
 
@@ -2368,7 +2423,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             }
         }
 
-        //Ordenar por menor puntuación restante --------------------
+        //Ordenar por menor puntuaciÃ³n restante --------------------
 
         jugadoresRestantes.sort(
                 (indice1, indice2) -> Integer.compare(
@@ -2391,11 +2446,11 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             String motivoFinalizacion
     ) {
 
-        //Construir la clasificación final
+        //Construir la clasificaciÃ³n final
         ArrayList<Integer> clasificacion =
                 construirClasificacionFinal();
 
-        //Listas ordenadas según la posición final
+        //Listas ordenadas segÃºn la posiciÃ³n final
         ArrayList<String> nombresOrdenados =
                 new ArrayList<>();
 
@@ -2411,7 +2466,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         ArrayList<Integer> indicesOriginales =
                 new ArrayList<>();
 
-        //Recorrer los jugadores en el orden de clasificación
+        //Recorrer los jugadores en el orden de clasificaciÃ³n
         for (int posicion = 0;
              posicion < clasificacion.size();
              posicion++) {
@@ -2440,7 +2495,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             );
         }
 
-        //El primer jugador de la clasificación es el ganador
+        //El primer jugador de la clasificaciÃ³n es el ganador
         String nombreGanador =
                 nombresOrdenados.isEmpty()
                         ? ""
@@ -2481,6 +2536,10 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 ResultadoActivity.EXTRA_NOMBRE_GANADOR,
                 nombreGanador
         );
+
+        intent.putExtra(ResultadoActivity.EXTRA_NUMERO_DARDOS, numeroDardosTurno);
+        intent.putExtra(ResultadoActivity.EXTRA_CIERRE_DOBLE, cierreDoble);
+        intent.putExtra(ResultadoActivity.EXTRA_ORDEN_ALEATORIO, ordenAleatorio);
 
         //Datos ordenados de los jugadores
         intent.putStringArrayListExtra(
@@ -2526,7 +2585,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
     }
 
-    //Control del botón atrás ---------------------------------------------------------
+    //Control del botÃ³n atrÃ¡s ---------------------------------------------------------
 
     private void configurarBotonAtras() {
 
@@ -2543,3 +2602,4 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         );
     }
 }
+

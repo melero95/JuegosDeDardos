@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.productos.juegosdedardos.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import adapters.ClasificacionResultadoAdapter;
 import modelos.ResultadoJugador;
@@ -59,6 +60,9 @@ public class ResultadoActivity extends AppCompatActivity {
 
     public static final String EXTRA_INDICES_ORIGINALES =
             "resultado_indices_originales";
+    public static final String EXTRA_NUMERO_DARDOS = "resultado_numero_dardos";
+    public static final String EXTRA_CIERRE_DOBLE = "resultado_cierre_doble";
+    public static final String EXTRA_ORDEN_ALEATORIO = "resultado_orden_aleatorio";
 
     //Claves de entrada para iniciar una nueva partida ------------------------------
 
@@ -86,6 +90,9 @@ public class ResultadoActivity extends AppCompatActivity {
     private int numeroJugadores;
     private int rondasJugadas;
     private int maxRondas;
+    private int numeroDardos = 3;
+    private boolean cierreDoble;
+    private boolean ordenAleatorio;
 
     //Listas recibidas -------------------------------------------------------------
 
@@ -241,6 +248,9 @@ public class ResultadoActivity extends AppCompatActivity {
                 EXTRA_MAX_RONDAS,
                 0
         );
+        numeroDardos = Math.max(1, Math.min(4, intent.getIntExtra(EXTRA_NUMERO_DARDOS, 3)));
+        cierreDoble = intent.getBooleanExtra(EXTRA_CIERRE_DOBLE, false);
+        ordenAleatorio = intent.getBooleanExtra(EXTRA_ORDEN_ALEATORIO, false);
 
         nombreGanador = intent.getStringExtra(
                 EXTRA_NOMBRE_GANADOR
@@ -718,6 +728,20 @@ public class ResultadoActivity extends AppCompatActivity {
         ArrayList<Integer> coloresRevancha =
                 reconstruirColoresOrdenOriginal();
 
+        if (ordenAleatorio) {
+            ArrayList<Integer> orden = new ArrayList<>();
+            for (int i = 0; i < nombresRevancha.size(); i++) orden.add(i);
+            Collections.shuffle(orden);
+            ArrayList<String> nombresMezclados = new ArrayList<>();
+            ArrayList<Integer> coloresMezclados = new ArrayList<>();
+            for (Integer indice : orden) {
+                nombresMezclados.add(nombresRevancha.get(indice));
+                coloresMezclados.add(coloresRevancha.get(indice));
+            }
+            nombresRevancha = nombresMezclados;
+            coloresRevancha = coloresMezclados;
+        }
+
         intentRevancha.putExtra(
                 EXTRA_ENTRADA_MODO_JUEGO,
                 modoJuego
@@ -732,6 +756,10 @@ public class ResultadoActivity extends AppCompatActivity {
                 EXTRA_ENTRADA_NUMERO_JUGADORES,
                 nombresRevancha.size()
         );
+
+        intentRevancha.putExtra(ConfigurarNuevaPartidaActivity.EXTRA_NUMERO_DARDOS, numeroDardos);
+        intentRevancha.putExtra(ConfigurarNuevaPartidaActivity.EXTRA_CIERRE_DOBLE, cierreDoble);
+        intentRevancha.putExtra(ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, ordenAleatorio);
 
         intentRevancha.putStringArrayListExtra(
                 EXTRA_ENTRADA_NOMBRES_JUGADORES,

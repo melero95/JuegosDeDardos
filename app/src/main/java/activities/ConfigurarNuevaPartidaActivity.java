@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import com.productos.juegosdedardos.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
@@ -37,6 +39,12 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private Button btnCrearPartida;
     private Button btnCancelarPartida;
     private Button btnUltimaConfiguracion;
+    private Button btnMostrarAjustesAvanzados;
+    private LinearLayout contenedorAjustesAvanzados;
+    private Switch switchCierreDoble;
+    private Switch switchOrdenAleatorio;
+    private Spinner spnNumeroDardos;
+    private TextView txtTituloNumeroDardos;
 
     // Modos de juego ------------------------------------------------------------
     private static final String MODO_301 = "301";
@@ -52,9 +60,16 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private static final String EXTRA_NUMERO_JUGADORES = "numeroJugadores";
     private static final String EXTRA_JUGADOR = "jugador";
     private static final String EXTRA_COLOR_JUGADOR = "colorJugador";
+    public static final String EXTRA_NUMERO_DARDOS = "numeroDardos";
+    public static final String EXTRA_CIERRE_DOBLE = "cierreDoble";
+    public static final String EXTRA_ORDEN_ALEATORIO = "ordenAleatorio";
 
     // Configuración base --------------------------------------------------------
     private static final String SP_ULTIMA_PARTIDA = "configuracion_ultima_partida";
+    private static final String SP_AJUSTES = "ajustes_partida";
+    private static final String PREF_DARDOS = "dardos_default";
+    private static final String PREF_CIERRE_DOBLE = "cierre_doble_default";
+    private static final String PREF_ORDEN_ALEATORIO = "orden_aleatorio_default";
 
     private static final int RONDAS_ESTANDAR = 15;
     private static final int RONDAS_DOUBLE_DOWN = 9;
@@ -108,6 +123,8 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         configurarCambioModoJuego();
         configurarBotonesRondas();
         configurarBotonesPrincipales();
+        configurarAjustesAvanzados();
+        cargarValoresPredeterminados();
 
         agregarFilaJugador();
         aplicarConfiguracionSegunModo(obtenerModoJuegoSeleccionado());
@@ -128,6 +145,12 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         btnCrearPartida = findViewById(R.id.btnCrearPartida);
         btnCancelarPartida = findViewById(R.id.btnCancelarPartida);
         btnUltimaConfiguracion = findViewById(R.id.btnUltimaConfiguracion);
+        btnMostrarAjustesAvanzados = findViewById(R.id.btnMostrarAjustesAvanzados);
+        contenedorAjustesAvanzados = findViewById(R.id.contenedorAjustesAvanzados);
+        switchCierreDoble = findViewById(R.id.switchCierreDoble);
+        switchOrdenAleatorio = findViewById(R.id.switchOrdenAleatorio);
+        spnNumeroDardos = findViewById(R.id.spnNumeroDardos);
+        txtTituloNumeroDardos = findViewById(R.id.txtTituloNumeroDardos);
     }
 
     private void inicializarSharedPreferences() {
@@ -221,9 +244,34 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         btnUltimaConfiguracion.setOnClickListener(v -> cargarUltimaConfiguracion());
     }
 
+    private void configurarAjustesAvanzados() {
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, new Integer[]{1, 2, 3, 4});
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnNumeroDardos.setAdapter(adapter);
+        btnMostrarAjustesAvanzados.setOnClickListener(v -> {
+            boolean mostrar = contenedorAjustesAvanzados.getVisibility() != View.VISIBLE;
+            contenedorAjustesAvanzados.setVisibility(mostrar ? View.VISIBLE : View.GONE);
+            btnMostrarAjustesAvanzados.setText(mostrar ? "Menos ajustes ▲" : "Más ajustes ▼");
+        });
+    }
+
+    /** Carga los valores que en el futuro podrán editarse desde AjustesActivity. */
+    private void cargarValoresPredeterminados() {
+        SharedPreferences preferencias = getSharedPreferences(SP_AJUSTES, MODE_PRIVATE);
+        int dardos = Math.max(1, Math.min(4, preferencias.getInt(PREF_DARDOS, 3)));
+        spnNumeroDardos.setSelection(dardos - 1);
+        switchCierreDoble.setChecked(preferencias.getBoolean(PREF_CIERRE_DOBLE, false));
+        switchOrdenAleatorio.setChecked(preferencias.getBoolean(PREF_ORDEN_ALEATORIO, false));
+    }
+
     // Reglas según modo de juego ------------------------------------------------
 
     private void aplicarConfiguracionSegunModo(String modoJuego) {
+        boolean esPuntos = MODO_301.equals(modoJuego) || MODO_501.equals(modoJuego);
+        switchCierreDoble.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
+        txtTituloNumeroDardos.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
+        spnNumeroDardos.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
         if (MODO_DOUBLE_DOWN.equals(modoJuego)) {
             bloquearRondas(RONDAS_DOUBLE_DOWN);
         } else if (MODO_AROUND_CLOCK.equals(modoJuego)) {
@@ -442,6 +490,9 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         editorUltimaPartida.putString(EXTRA_MODO_JUEGO, modoJuego);
         editorUltimaPartida.putInt(EXTRA_MAX_RONDAS, maxRondas);
         editorUltimaPartida.putInt(EXTRA_NUMERO_JUGADORES, filasJugadores.size());
+        editorUltimaPartida.putInt(EXTRA_NUMERO_DARDOS, (Integer) spnNumeroDardos.getSelectedItem());
+        editorUltimaPartida.putBoolean(EXTRA_CIERRE_DOBLE, switchCierreDoble.isChecked());
+        editorUltimaPartida.putBoolean(PREF_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
 
         for (int i = 0; i < nombresSeleccionados.size(); i++) {
             editorUltimaPartida.putString(EXTRA_JUGADOR + (i + 1), nombresSeleccionados.get(i));
@@ -462,6 +513,11 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         String modoJuegoGuardado = spUltimaPartida.getString(EXTRA_MODO_JUEGO, MODO_501);
         int rondasGuardadas = spUltimaPartida.getInt(EXTRA_MAX_RONDAS, RONDAS_ESTANDAR);
         int numeroJugadoresGuardado = spUltimaPartida.getInt(EXTRA_NUMERO_JUGADORES, 1);
+        int dardosGuardados = Math.max(1, Math.min(4,
+                spUltimaPartida.getInt(EXTRA_NUMERO_DARDOS, 3)));
+        spnNumeroDardos.setSelection(dardosGuardados - 1);
+        switchCierreDoble.setChecked(spUltimaPartida.getBoolean(EXTRA_CIERRE_DOBLE, false));
+        switchOrdenAleatorio.setChecked(spUltimaPartida.getBoolean(PREF_ORDEN_ALEATORIO, false));
 
         seleccionarModoJuegoEnSpinner(modoJuegoGuardado);
 
@@ -615,9 +671,26 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         ArrayList<String> nombresSeleccionados = obtenerNombresJugadoresSeleccionados();
         ArrayList<Integer> coloresSeleccionados = obtenerColoresJugadoresSeleccionados();
 
+        if (switchOrdenAleatorio.isChecked()) {
+            ArrayList<Integer> orden = new ArrayList<>();
+            for (int i = 0; i < nombresSeleccionados.size(); i++) orden.add(i);
+            Collections.shuffle(orden);
+            ArrayList<String> nombresMezclados = new ArrayList<>();
+            ArrayList<Integer> coloresMezclados = new ArrayList<>();
+            for (Integer indice : orden) {
+                nombresMezclados.add(nombresSeleccionados.get(indice));
+                coloresMezclados.add(coloresSeleccionados.get(indice));
+            }
+            nombresSeleccionados = nombresMezclados;
+            coloresSeleccionados = coloresMezclados;
+        }
+
         intent.putExtra(EXTRA_MODO_JUEGO, modoJuego);
         intent.putExtra(EXTRA_MAX_RONDAS, maxRondas);
         intent.putExtra(EXTRA_NUMERO_JUGADORES, filasJugadores.size());
+        intent.putExtra(EXTRA_NUMERO_DARDOS, (Integer) spnNumeroDardos.getSelectedItem());
+        intent.putExtra(EXTRA_CIERRE_DOBLE, switchCierreDoble.isChecked());
+        intent.putExtra(EXTRA_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
 
         for (int i = 0; i < nombresSeleccionados.size(); i++) {
             intent.putExtra(EXTRA_JUGADOR + (i + 1), nombresSeleccionados.get(i));
