@@ -40,6 +40,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private Button btnCancelarPartida;
     private Button btnUltimaConfiguracion;
     private Button btnMostrarAjustesAvanzados;
+
     private LinearLayout contenedorAjustesAvanzados;
     private Switch switchCierreDoble;
     private Switch switchOrdenAleatorio;
@@ -47,6 +48,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private TextView txtTituloNumeroDardos;
 
     // Modos de juego ------------------------------------------------------------
+
     private static final String MODO_301 = "301";
     private static final String MODO_501 = "501";
     private static final String MODO_CRICKET = "Cricket";
@@ -54,22 +56,34 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private static final String MODO_DOUBLE_DOWN = "Double Down";
     private static final String MODO_AROUND_CLOCK = "Around the Clock";
 
-    // Extras de Intent y claves de SharedPreferences ---------------------------
+    // Extras de Intent ----------------------------------------------------------
+
     private static final String EXTRA_MODO_JUEGO = "modoJuego";
     private static final String EXTRA_MAX_RONDAS = "maxRondas";
     private static final String EXTRA_NUMERO_JUGADORES = "numeroJugadores";
+
     private static final String EXTRA_JUGADOR = "jugador";
     private static final String EXTRA_COLOR_JUGADOR = "colorJugador";
+
     public static final String EXTRA_NUMERO_DARDOS = "numeroDardos";
     public static final String EXTRA_CIERRE_DOBLE = "cierreDoble";
     public static final String EXTRA_ORDEN_ALEATORIO = "ordenAleatorio";
 
-    // Configuración base --------------------------------------------------------
+    // SharedPreferences: última configuración ----------------------------------
+
     private static final String SP_ULTIMA_PARTIDA = "configuracion_ultima_partida";
+
+    // SharedPreferences: ajustes generales -------------------------------------
+
     private static final String SP_AJUSTES = "ajustes_partida";
+
+    private static final String PREF_JUGADOR = "jugador_default";
+    private static final String PREF_MODO = "modo_default";
     private static final String PREF_DARDOS = "dardos_default";
     private static final String PREF_CIERRE_DOBLE = "cierre_doble_default";
     private static final String PREF_ORDEN_ALEATORIO = "orden_aleatorio_default";
+
+    // Configuración base --------------------------------------------------------
 
     private static final int RONDAS_ESTANDAR = 15;
     private static final int RONDAS_DOUBLE_DOWN = 9;
@@ -83,6 +97,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
     private SharedPreferences spUltimaPartida;
     private SharedPreferences.Editor editorUltimaPartida;
+    private SharedPreferences spAjustes;
 
     private final int[] coloresJugadores = {
             R.color.jugador_rojo,
@@ -110,7 +125,6 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Configuro las barras del sistema para que mantengan el color de la app.
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.blue));
 
@@ -119,14 +133,18 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         inicializarComponentes();
         inicializarSharedPreferences();
         inicializarListas();
+
         cargarSpinnerModoJuego();
         configurarCambioModoJuego();
         configurarBotonesRondas();
         configurarBotonesPrincipales();
         configurarAjustesAvanzados();
-        cargarValoresPredeterminados();
+
+        cargarValoresPredeterminadosDesdeAjustes();
 
         agregarFilaJugador();
+        aplicarJugadorPredeterminadoPrimeraFila();
+
         aplicarConfiguracionSegunModo(obtenerModoJuegoSeleccionado());
     }
 
@@ -146,6 +164,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         btnCancelarPartida = findViewById(R.id.btnCancelarPartida);
         btnUltimaConfiguracion = findViewById(R.id.btnUltimaConfiguracion);
         btnMostrarAjustesAvanzados = findViewById(R.id.btnMostrarAjustesAvanzados);
+
         contenedorAjustesAvanzados = findViewById(R.id.contenedorAjustesAvanzados);
         switchCierreDoble = findViewById(R.id.switchCierreDoble);
         switchOrdenAleatorio = findViewById(R.id.switchOrdenAleatorio);
@@ -156,6 +175,8 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private void inicializarSharedPreferences() {
         spUltimaPartida = getSharedPreferences(SP_ULTIMA_PARTIDA, MODE_PRIVATE);
         editorUltimaPartida = spUltimaPartida.edit();
+
+        spAjustes = getSharedPreferences(SP_AJUSTES, MODE_PRIVATE);
     }
 
     private void inicializarListas() {
@@ -188,7 +209,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         spnModoJuego.setAdapter(adapter);
     }
 
-    // Configuración de listeners ------------------------------------------------
+    // Listeners -----------------------------------------------------------------
 
     private void configurarCambioModoJuego() {
         spnModoJuego.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -245,33 +266,64 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     }
 
     private void configurarAjustesAvanzados() {
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, new Integer[]{1, 2, 3, 4});
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                new Integer[]{1, 2, 3, 4}
+        );
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnNumeroDardos.setAdapter(adapter);
+
         btnMostrarAjustesAvanzados.setOnClickListener(v -> {
             boolean mostrar = contenedorAjustesAvanzados.getVisibility() != View.VISIBLE;
+
             contenedorAjustesAvanzados.setVisibility(mostrar ? View.VISIBLE : View.GONE);
             btnMostrarAjustesAvanzados.setText(mostrar ? "Menos ajustes ▲" : "Más ajustes ▼");
         });
     }
 
-    /** Carga los valores que en el futuro podrán editarse desde AjustesActivity. */
-    private void cargarValoresPredeterminados() {
-        SharedPreferences preferencias = getSharedPreferences(SP_AJUSTES, MODE_PRIVATE);
-        int dardos = Math.max(1, Math.min(4, preferencias.getInt(PREF_DARDOS, 3)));
+    // AjustesActivity -----------------------------------------------------------
+
+    private void cargarValoresPredeterminadosDesdeAjustes() {
+        cargandoConfiguracion = true;
+
+        String modoPredeterminado = spAjustes.getString(PREF_MODO, MODO_501);
+        seleccionarModoJuegoEnSpinner(modoPredeterminado);
+
+        int dardos = Math.max(1, Math.min(4, spAjustes.getInt(PREF_DARDOS, 3)));
         spnNumeroDardos.setSelection(dardos - 1);
-        switchCierreDoble.setChecked(preferencias.getBoolean(PREF_CIERRE_DOBLE, false));
-        switchOrdenAleatorio.setChecked(preferencias.getBoolean(PREF_ORDEN_ALEATORIO, false));
+
+        switchCierreDoble.setChecked(spAjustes.getBoolean(PREF_CIERRE_DOBLE, false));
+        switchOrdenAleatorio.setChecked(spAjustes.getBoolean(PREF_ORDEN_ALEATORIO, false));
+
+        cargandoConfiguracion = false;
+    }
+
+    private void aplicarJugadorPredeterminadoPrimeraFila() {
+        if (filasJugadores.isEmpty()) {
+            return;
+        }
+
+        String jugadorPredeterminado = spAjustes.getString(PREF_JUGADOR, "Jugador");
+
+        View primeraFila = filasJugadores.get(0);
+        Spinner spnJugador = primeraFila.findViewById(R.id.spnJugador);
+
+        seleccionarJugadorEnSpinner(spnJugador, jugadorPredeterminado);
     }
 
     // Reglas según modo de juego ------------------------------------------------
 
     private void aplicarConfiguracionSegunModo(String modoJuego) {
         boolean esPuntos = MODO_301.equals(modoJuego) || MODO_501.equals(modoJuego);
+
         switchCierreDoble.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
-        txtTituloNumeroDardos.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
-        spnNumeroDardos.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
+
+        txtTituloNumeroDardos.setVisibility(View.VISIBLE);
+        spnNumeroDardos.setVisibility(View.VISIBLE);
+        switchOrdenAleatorio.setVisibility(View.VISIBLE);
+
         if (MODO_DOUBLE_DOWN.equals(modoJuego)) {
             bloquearRondas(RONDAS_DOUBLE_DOWN);
         } else if (MODO_AROUND_CLOCK.equals(modoJuego)) {
@@ -284,6 +336,8 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
             asegurarMinimoDosJugadores();
             intentarEvitarJugadorRepetidoEnCricket();
         }
+
+        actualizarVisibilidadBotonesEliminar();
     }
 
     private boolean esModoCricket(String modoJuego) {
@@ -431,6 +485,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
             contenedorJugadores.removeView(fila);
             filasJugadores.remove(fila);
+
             actualizarTextoJugadores();
             actualizarVisibilidadBotonesEliminar();
         });
@@ -445,12 +500,14 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     }
 
     private void actualizarVisibilidadBotonesEliminar() {
-        boolean ocultarEliminar = filasJugadores.size() == 1;
+        boolean modoCricket = esModoCricket(obtenerModoJuegoSeleccionado());
 
         for (View fila : filasJugadores) {
             TextView btnEliminarJugador = fila.findViewById(R.id.btnEliminarJugador);
 
-            if (ocultarEliminar) {
+            if (filasJugadores.size() <= 1) {
+                btnEliminarJugador.setVisibility(View.GONE);
+            } else if (modoCricket && filasJugadores.size() <= 2) {
                 btnEliminarJugador.setVisibility(View.GONE);
             } else {
                 btnEliminarJugador.setVisibility(View.VISIBLE);
@@ -480,7 +537,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         return coloresSeleccionados;
     }
 
-    // SharedPreferences ---------------------------------------------------------
+    // Última configuración ------------------------------------------------------
 
     private void guardarConfiguracionUltimaPartida() {
         String modoJuego = obtenerModoJuegoSeleccionado();
@@ -490,9 +547,9 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         editorUltimaPartida.putString(EXTRA_MODO_JUEGO, modoJuego);
         editorUltimaPartida.putInt(EXTRA_MAX_RONDAS, maxRondas);
         editorUltimaPartida.putInt(EXTRA_NUMERO_JUGADORES, filasJugadores.size());
-        editorUltimaPartida.putInt(EXTRA_NUMERO_DARDOS, (Integer) spnNumeroDardos.getSelectedItem());
+        editorUltimaPartida.putInt(EXTRA_NUMERO_DARDOS, obtenerNumeroDardosSeleccionado());
         editorUltimaPartida.putBoolean(EXTRA_CIERRE_DOBLE, switchCierreDoble.isChecked());
-        editorUltimaPartida.putBoolean(PREF_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
+        editorUltimaPartida.putBoolean(EXTRA_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
 
         for (int i = 0; i < nombresSeleccionados.size(); i++) {
             editorUltimaPartida.putString(EXTRA_JUGADOR + (i + 1), nombresSeleccionados.get(i));
@@ -513,11 +570,13 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         String modoJuegoGuardado = spUltimaPartida.getString(EXTRA_MODO_JUEGO, MODO_501);
         int rondasGuardadas = spUltimaPartida.getInt(EXTRA_MAX_RONDAS, RONDAS_ESTANDAR);
         int numeroJugadoresGuardado = spUltimaPartida.getInt(EXTRA_NUMERO_JUGADORES, 1);
+
         int dardosGuardados = Math.max(1, Math.min(4,
                 spUltimaPartida.getInt(EXTRA_NUMERO_DARDOS, 3)));
+
         spnNumeroDardos.setSelection(dardosGuardados - 1);
         switchCierreDoble.setChecked(spUltimaPartida.getBoolean(EXTRA_CIERRE_DOBLE, false));
-        switchOrdenAleatorio.setChecked(spUltimaPartida.getBoolean(PREF_ORDEN_ALEATORIO, false));
+        switchOrdenAleatorio.setChecked(spUltimaPartida.getBoolean(EXTRA_ORDEN_ALEATORIO, false));
 
         seleccionarModoJuegoEnSpinner(modoJuegoGuardado);
 
@@ -579,7 +638,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         btnColorJugador.setTag(colorRecurso);
     }
 
-    // Crear partida -------------------------------------------------------------
+    // Validación ----------------------------------------------------------------
 
     private boolean validarConfiguracionPartida() {
         if (filasJugadores.isEmpty()) {
@@ -624,6 +683,8 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
+
+    // Crear partida -------------------------------------------------------------
 
     private void crearPartida() {
         String modoJuego = obtenerModoJuegoSeleccionado();
@@ -673,22 +734,30 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
         if (switchOrdenAleatorio.isChecked()) {
             ArrayList<Integer> orden = new ArrayList<>();
-            for (int i = 0; i < nombresSeleccionados.size(); i++) orden.add(i);
+
+            for (int i = 0; i < nombresSeleccionados.size(); i++) {
+                orden.add(i);
+            }
+
             Collections.shuffle(orden);
+
             ArrayList<String> nombresMezclados = new ArrayList<>();
             ArrayList<Integer> coloresMezclados = new ArrayList<>();
+
             for (Integer indice : orden) {
                 nombresMezclados.add(nombresSeleccionados.get(indice));
                 coloresMezclados.add(coloresSeleccionados.get(indice));
             }
+
             nombresSeleccionados = nombresMezclados;
             coloresSeleccionados = coloresMezclados;
         }
 
         intent.putExtra(EXTRA_MODO_JUEGO, modoJuego);
         intent.putExtra(EXTRA_MAX_RONDAS, maxRondas);
-        intent.putExtra(EXTRA_NUMERO_JUGADORES, filasJugadores.size());
-        intent.putExtra(EXTRA_NUMERO_DARDOS, (Integer) spnNumeroDardos.getSelectedItem());
+        intent.putExtra(EXTRA_NUMERO_JUGADORES, nombresSeleccionados.size());
+
+        intent.putExtra(EXTRA_NUMERO_DARDOS, obtenerNumeroDardosSeleccionado());
         intent.putExtra(EXTRA_CIERRE_DOBLE, switchCierreDoble.isChecked());
         intent.putExtra(EXTRA_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
 
@@ -697,6 +766,9 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
             intent.putExtra(EXTRA_COLOR_JUGADOR + (i + 1), coloresSeleccionados.get(i));
         }
 
+        intent.putStringArrayListExtra("nombresJugadores", nombresSeleccionados);
+        intent.putIntegerArrayListExtra("colorJugador", coloresSeleccionados);
+
         // Lista usada actualmente por PartidaPuntosActivity.
         intent.putStringArrayListExtra(
                 PartidaPuntosActivity.EXTRA_NOMBRES_JUGADORES,
@@ -704,7 +776,19 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         );
     }
 
+    // Utilidades ----------------------------------------------------------------
+
     private String obtenerModoJuegoSeleccionado() {
         return spnModoJuego.getSelectedItem().toString();
+    }
+
+    private int obtenerNumeroDardosSeleccionado() {
+        Object seleccionado = spnNumeroDardos.getSelectedItem();
+
+        if (seleccionado instanceof Integer) {
+            return (Integer) seleccionado;
+        }
+
+        return 3;
     }
 }

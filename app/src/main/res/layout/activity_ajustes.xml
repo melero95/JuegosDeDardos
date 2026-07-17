@@ -1,10 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fondo"
     tools:context="activities.AjustesActivity">
+
+    <TextView
+        android:id="@+id/txtTituloAjustes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:text="Ajustes"
+        android:textColor="@color/gold"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollAjustes"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="12dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/contenedorBotonesAjustes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtTituloAjustes">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fondo_panel_resultado"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView style="@style/TituloSeccionAjustes" android:text="PARTIDA PREDETERMINADA" />
+            <TextView style="@style/EtiquetaAjustes" android:text="Jugador predeterminado" />
+            <Spinner android:id="@+id/spnJugadorPredeterminado" style="@style/SpinnerAjustes" />
+            <TextView style="@style/EtiquetaAjustes" android:text="Modo de juego preferido" />
+            <Spinner android:id="@+id/spnModoPredeterminado" style="@style/SpinnerAjustes" />
+            <TextView style="@style/EtiquetaAjustes" android:text="Dardos por turno" />
+            <Spinner android:id="@+id/spnDardosPredeterminados" style="@style/SpinnerAjustes" />
+            <CheckBox android:id="@+id/chkCierreDoblePredeterminado" style="@style/CheckAjustes"
+                android:text="Cerrar 301/501 con un doble" />
+            <CheckBox android:id="@+id/chkOrdenAleatorioPredeterminado" style="@style/CheckAjustes"
+                android:text="Orden de jugadores aleatorio" />
+
+            <TextView style="@style/TituloSeccionAjustes" android:layout_marginTop="22dp"
+                android:text="COMPORTAMIENTO" />
+            <CheckBox android:id="@+id/chkMantenerMultiplicador" style="@style/CheckAjustes"
+                android:text="Mantener seleccionado el multiplicador" />
+            <CheckBox android:id="@+id/chkConfirmarSalida" style="@style/CheckAjustes"
+                android:text="Confirmar antes de abandonar una partida" />
+            <CheckBox android:id="@+id/chkVibracion" style="@style/CheckAjustes"
+                android:text="Vibrar al registrar una tirada" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Estas preferencias quedan guardadas. Su aplicación al resto de pantallas se realizará más adelante."
+                android:textColor="#B3FFFFFF"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/contenedorBotonesAjustes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button android:id="@+id/btnGuardarAjustes" style="@style/BotonPrincipal"
+            android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
+            android:text="Guardar" />
+        <Button android:id="@+id/btnRestablecerAjustes" style="@style/BotonPrincipal"
+            android:layout_width="0dp" android:layout_height="50dp" android:layout_marginHorizontal="8dp"
+            android:layout_weight="1" android:text="Restablecer" android:textSize="12sp" />
+        <Button android:id="@+id/btnVolverAjustes" style="@style/BotonPrincipal"
+            android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
+            android:text="Volver" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
