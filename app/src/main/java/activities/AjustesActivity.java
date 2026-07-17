@@ -104,6 +104,7 @@ public class AjustesActivity extends AppCompatActivity {
         btnGuardar.setOnClickListener(v -> {
             guardarPreferencias();
             Toast.makeText(this, "Ajustes guardados", Toast.LENGTH_SHORT).show();
+            finish();
         });
         btnRestablecer.setOnClickListener(v -> restablecerPreferencias());
         btnVolver.setOnClickListener(v -> finish());

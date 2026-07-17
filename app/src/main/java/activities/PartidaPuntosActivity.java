@@ -396,7 +396,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 ConfigurarNuevaPartidaActivity.EXTRA_CIERRE_DOBLE, false);
         ordenAleatorio = getIntent().getBooleanExtra(
                 ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false);
-        imgDardo4.setVisibility(numeroDardosTurno == 4 ? View.VISIBLE : View.GONE);
+        actualizarVisibilidadDardos();
 
         nombresJugadores = getIntent().getStringArrayListExtra(
                 EXTRA_NOMBRES_JUGADORES
@@ -608,7 +608,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         numeroDardosTurno = Math.max(1, Math.min(4, estado.getNumeroDardosTurno()));
         cierreDoble = estado.isCierreDoble();
         ordenAleatorio = estado.isOrdenAleatorio();
-        imgDardo4.setVisibility(numeroDardosTurno == 4 ? View.VISIBLE : View.GONE);
+        actualizarVisibilidadDardos();
 
         jugadorActual =
                 Math.max(
@@ -2105,7 +2105,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 dardoActual == 2 ? 1.0f : 0.35f
         );
 
-        imgDardo4.setVisibility(numeroDardosTurno == 4 ? View.VISIBLE : View.GONE);
+        actualizarVisibilidadDardos();
         imgDardo4.setAlpha(dardoActual == 3 ? 1.0f : 0.35f);
 
         if (dardoActual >= numeroDardosTurno) {
@@ -2117,6 +2117,13 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         }
 
         actualizarMarcadorCentralTurno();
+    }
+
+    private void actualizarVisibilidadDardos() {
+        imgDardo1.setVisibility(View.VISIBLE);
+        imgDardo2.setVisibility(numeroDardosTurno >= 2 ? View.VISIBLE : View.GONE);
+        imgDardo3.setVisibility(numeroDardosTurno >= 3 ? View.VISIBLE : View.GONE);
+        imgDardo4.setVisibility(numeroDardosTurno >= 4 ? View.VISIBLE : View.GONE);
     }
 
     private boolean esUltimoDardoDoble() {

@@ -82,20 +82,27 @@
         android:layout_marginEnd="18dp"
         android:layout_marginBottom="24dp"
         android:gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button android:id="@+id/btnGuardarAjustes" style="@style/BotonPrincipal"
-            android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
-            android:text="Guardar" />
-        <Button android:id="@+id/btnRestablecerAjustes" style="@style/BotonPrincipal"
-            android:layout_width="0dp" android:layout_height="50dp" android:layout_marginHorizontal="8dp"
-            android:layout_weight="1" android:text="Restablecer" android:textSize="12sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnGuardarAjustes" style="@style/BotonPrincipal"
+                android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
+                android:layout_marginEnd="6dp" android:text="Guardar" android:textSize="14sp" />
+            <Button android:id="@+id/btnRestablecerAjustes" style="@style/BotonPrincipal"
+                android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
+                android:layout_marginStart="6dp" android:text="Restablecer" android:textSize="13sp" />
+        </LinearLayout>
+
         <Button android:id="@+id/btnVolverAjustes" style="@style/BotonPrincipal"
-            android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"
-            android:text="Volver" />
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:layout_marginTop="8dp" android:text="Volver" android:textSize="14sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
