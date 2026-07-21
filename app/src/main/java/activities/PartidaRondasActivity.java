@@ -33,8 +33,11 @@ import java.util.Locale;
  * Gestiona los modos:
  *
  * - Around the Clock:
- *   Juega desde el número 1 hasta el número configurado y termina con Diana.
+ *   Carrera individual desde el 1 hasta la Diana.
+ *   Cada jugador tiene su propio objetivo.
  *   Simple = 1 avance, doble = 2 avances y triple = 3 avances.
+ *   Los jugadores finalizados dejan de participar y se conserva
+ *   el orden completo de llegada.
  *
  * - Shanghai:
  *   Cada ronda tiene un único objetivo, desde el 1 hasta el 20 y Diana.
@@ -73,6 +76,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private static final int PUNTUACION_INICIAL_DOUBLE_DOWN = 50;
     private static final int RONDAS_DOUBLE_DOWN = 9;
+    private static final int OBJETIVO_INICIAL_AROUND_CLOCK = 1;
+    private static final int OBJETIVO_DIANA_AROUND_CLOCK = 21;
+    private static final int OBJETIVO_FINALIZADO_AROUND_CLOCK = 22;
 
     /*
      * Tipos de objetivo de Double Down:
@@ -155,6 +161,10 @@ public class PartidaRondasActivity extends AppCompatActivity {
     // Estado de la partida -----------------------------------------------------
 
     private int[] puntuacionesJugadores;
+    private int[] objetivosJugadores;
+    private boolean[] jugadoresFinalizados;
+    private final ArrayList<Integer> ordenFinalizacion =
+            new ArrayList<>();
 
     private int jugadorActual;
     private int rondaActual;
@@ -628,6 +638,24 @@ public class PartidaRondasActivity extends AppCompatActivity {
         puntuacionesJugadores =
                 new int[nombresJugadores.length];
 
+        objetivosJugadores =
+                new int[nombresJugadores.length];
+
+        jugadoresFinalizados =
+                new boolean[nombresJugadores.length];
+
+        Arrays.fill(
+                objetivosJugadores,
+                OBJETIVO_INICIAL_AROUND_CLOCK
+        );
+
+        Arrays.fill(
+                jugadoresFinalizados,
+                false
+        );
+
+        ordenFinalizacion.clear();
+
         if (modoRondas == ModoRondas.DOUBLE_DOWN) {
 
             Arrays.fill(
@@ -729,6 +757,24 @@ public class PartidaRondasActivity extends AppCompatActivity {
         estado.setPuntuacionesJugadores(
                 convertirArrayIntALista(
                         puntuacionesJugadores
+                )
+        );
+
+        estado.setObjetivosJugadores(
+                convertirArrayIntALista(
+                        objetivosJugadores
+                )
+        );
+
+        estado.setJugadoresFinalizados(
+                convertirArrayBooleanALista(
+                        jugadoresFinalizados
+                )
+        );
+
+        estado.setOrdenFinalizacion(
+                new ArrayList<>(
+                        ordenFinalizacion
                 )
         );
 
@@ -966,6 +1012,61 @@ public class PartidaRondasActivity extends AppCompatActivity {
                         puntuacionPorDefecto
                 );
 
+        objetivosJugadores =
+                convertirListaAArrayInt(
+                        estado.getObjetivosJugadores(),
+                        numeroJugadores,
+                        OBJETIVO_INICIAL_AROUND_CLOCK
+                );
+
+        jugadoresFinalizados =
+                convertirListaAArrayBoolean(
+                        estado.getJugadoresFinalizados(),
+                        numeroJugadores
+                );
+
+        ordenFinalizacion.clear();
+
+        if (estado.getOrdenFinalizacion() != null) {
+
+            for (Integer indice :
+                    estado.getOrdenFinalizacion()) {
+
+                if (indice != null
+                        && indice >= 0
+                        && indice < numeroJugadores
+                        && !ordenFinalizacion.contains(indice)) {
+
+                    ordenFinalizacion.add(indice);
+                }
+            }
+        }
+
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            for (int i = 0; i < numeroJugadores; i++) {
+
+                objetivosJugadores[i] =
+                        Math.max(
+                                OBJETIVO_INICIAL_AROUND_CLOCK,
+                                Math.min(
+                                        objetivosJugadores[i],
+                                        OBJETIVO_FINALIZADO_AROUND_CLOCK
+                                )
+                        );
+
+                if (objetivosJugadores[i]
+                        >= OBJETIVO_FINALIZADO_AROUND_CLOCK) {
+
+                    jugadoresFinalizados[i] = true;
+
+                    if (!ordenFinalizacion.contains(i)) {
+                        ordenFinalizacion.add(i);
+                    }
+                }
+            }
+        }
+
         Arrays.fill(textosDardos, "");
 
         if (estado.getTextosDardos() != null) {
@@ -1017,6 +1118,24 @@ public class PartidaRondasActivity extends AppCompatActivity {
             guardado.setPuntuacionesJugadores(
                     convertirArrayIntALista(
                             estado.puntuacionesJugadores
+                    )
+            );
+
+            guardado.setObjetivosJugadores(
+                    convertirArrayIntALista(
+                            estado.objetivosJugadores
+                    )
+            );
+
+            guardado.setJugadoresFinalizados(
+                    convertirArrayBooleanALista(
+                            estado.jugadoresFinalizados
+                    )
+            );
+
+            guardado.setOrdenFinalizacion(
+                    new ArrayList<>(
+                            estado.ordenFinalizacion
                     )
             );
 
@@ -1077,6 +1196,20 @@ public class PartidaRondasActivity extends AppCompatActivity {
                                     modoRondas == ModoRondas.DOUBLE_DOWN
                                             ? PUNTUACION_INICIAL_DOUBLE_DOWN
                                             : 0
+                            ),
+                            convertirListaAArrayInt(
+                                    guardado.getObjetivosJugadores(),
+                                    nombresJugadores.length,
+                                    OBJETIVO_INICIAL_AROUND_CLOCK
+                            ),
+                            convertirListaAArrayBoolean(
+                                    guardado.getJugadoresFinalizados(),
+                                    nombresJugadores.length
+                            ),
+                            guardado.getOrdenFinalizacion() == null
+                                    ? new ArrayList<>()
+                                    : new ArrayList<>(
+                                    guardado.getOrdenFinalizacion()
                             ),
                             guardado.getJugadorActual(),
                             guardado.getRondaActual(),
@@ -1143,6 +1276,53 @@ public class PartidaRondasActivity extends AppCompatActivity {
             if (valor != null) {
                 resultado[i] = valor;
             }
+        }
+
+        return resultado;
+    }
+
+    private ArrayList<Boolean> convertirArrayBooleanALista(
+            boolean[] valores
+    ) {
+
+        ArrayList<Boolean> resultado =
+                new ArrayList<>();
+
+        if (valores != null) {
+
+            for (boolean valor : valores) {
+                resultado.add(valor);
+            }
+        }
+
+        return resultado;
+    }
+
+    private boolean[] convertirListaAArrayBoolean(
+            ArrayList<Boolean> valores,
+            int tamano
+    ) {
+
+        boolean[] resultado =
+                new boolean[tamano];
+
+        if (valores == null) {
+            return resultado;
+        }
+
+        int limite =
+                Math.min(
+                        valores.size(),
+                        tamano
+                );
+
+        for (int i = 0; i < limite; i++) {
+
+            Boolean valor =
+                    valores.get(i);
+
+            resultado[i] =
+                    valor != null && valor;
         }
 
         return resultado;
@@ -1299,10 +1479,11 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
 
-            if (esRondaDianaSecuencial()) {
+            int objetivoActual =
+                    objetivosJugadores[jugadorActual];
 
-                puntosValidos =
-                        multiplicador;
+            if (objetivoActual
+                    == OBJETIVO_DIANA_AROUND_CLOCK) {
 
                 texto =
                         multiplicador == 1
@@ -1311,18 +1492,22 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
             } else {
 
-                int numeroObjetivo =
-                        rondaActual;
-
-                puntosValidos =
-                        multiplicador;
-
                 texto =
                         crearTextoMultiplicador(
-                                numeroObjetivo,
+                                objetivoActual,
                                 multiplicador
                         );
             }
+
+            avanzarObjetivoAroundClock(
+                    multiplicador
+            );
+
+            textosDardos[dardoActual] = texto;
+            haAcertadoObjetivoTurno = true;
+
+            finalizarRegistroDardo();
+            return;
 
         } else if (modoRondas == ModoRondas.SHANGHAI) {
 
@@ -1471,6 +1656,41 @@ public class PartidaRondasActivity extends AppCompatActivity {
         );
     }
 
+    private void avanzarObjetivoAroundClock(
+            int posiciones) {
+
+        if (modoRondas != ModoRondas.AROUND_THE_CLOCK
+                || jugadoresFinalizados[jugadorActual]) {
+
+            return;
+        }
+
+        int nuevoObjetivo =
+                objetivosJugadores[jugadorActual]
+                        + Math.max(1, posiciones);
+
+        if (nuevoObjetivo
+                >= OBJETIVO_FINALIZADO_AROUND_CLOCK) {
+
+            objetivosJugadores[jugadorActual] =
+                    OBJETIVO_FINALIZADO_AROUND_CLOCK;
+
+            jugadoresFinalizados[jugadorActual] = true;
+
+            if (!ordenFinalizacion.contains(jugadorActual)) {
+
+                ordenFinalizacion.add(
+                        jugadorActual
+                );
+            }
+
+        } else {
+
+            objetivosJugadores[jugadorActual] =
+                    nuevoObjetivo;
+        }
+    }
+
     private void aplicarImpactoValido(
             int puntos,
             String texto) {
@@ -1487,6 +1707,12 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         if (partidaFinalizada
                 || animacionCambioTurnoActiva) {
+
+            return false;
+        }
+
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK
+                && jugadoresFinalizados[jugadorActual]) {
 
             return false;
         }
@@ -1511,6 +1737,13 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         actualizarInterfazCompleta();
         guardarPartidaEnCurso();
+
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK
+                && jugadoresFinalizados[jugadorActual]) {
+
+            finalizarTurnoConAnimacion();
+            return;
+        }
 
         if (dardoActual >= numeroDardosTurno) {
 
@@ -1605,7 +1838,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
             aplicarResultadoTurnoDoubleDown();
 
-        } else {
+        } else if (modoRondas == ModoRondas.SHANGHAI) {
 
             puntuacionesJugadores[jugadorActual] +=
                     puntosValidosTurno;
@@ -1642,15 +1875,55 @@ public class PartidaRondasActivity extends AppCompatActivity {
      */
     private boolean avanzarJugadorYRonda() {
 
-        jugadorActual++;
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK
+                && todosJugadoresFinalizados()) {
 
-        if (jugadorActual >= nombresJugadores.length) {
+            return true;
+        }
 
-            jugadorActual = 0;
-            rondaActual++;
+        int jugadoresComprobados = 0;
+
+        do {
+
+            jugadorActual++;
+
+            if (jugadorActual >= nombresJugadores.length) {
+
+                jugadorActual = 0;
+                rondaActual++;
+            }
+
+            jugadoresComprobados++;
+
+        } while (
+                modoRondas == ModoRondas.AROUND_THE_CLOCK
+                        && jugadoresFinalizados[jugadorActual]
+                        && jugadoresComprobados
+                        < nombresJugadores.length
+        );
+
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+            return todosJugadoresFinalizados();
         }
 
         return rondaActual > maxRondas;
+    }
+
+    private boolean todosJugadoresFinalizados() {
+
+        if (modoRondas != ModoRondas.AROUND_THE_CLOCK) {
+            return false;
+        }
+
+        for (boolean finalizado :
+                jugadoresFinalizados) {
+
+            if (!finalizado) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void prepararNuevoTurno() {
@@ -1666,7 +1939,15 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private TipoObjetivo obtenerTipoObjetivoActual() {
 
-        if (modoRondas != ModoRondas.DOUBLE_DOWN) {
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            return objetivosJugadores[jugadorActual]
+                    == OBJETIVO_DIANA_AROUND_CLOCK
+                    ? TipoObjetivo.BULL
+                    : TipoObjetivo.NUMERO;
+        }
+
+        if (modoRondas == ModoRondas.SHANGHAI) {
 
             return esRondaDianaSecuencial()
                     ? TipoObjetivo.BULL
@@ -1687,7 +1968,18 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private int obtenerValorObjetivoActual() {
 
-        if (modoRondas != ModoRondas.DOUBLE_DOWN) {
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            int objetivo =
+                    objetivosJugadores[jugadorActual];
+
+            return objetivo
+                    == OBJETIVO_DIANA_AROUND_CLOCK
+                    ? 25
+                    : objetivo;
+        }
+
+        if (modoRondas == ModoRondas.SHANGHAI) {
 
             return esRondaDianaSecuencial()
                     ? 25
@@ -1708,7 +2000,27 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private String obtenerTextoObjetivoActual() {
 
-        if (modoRondas != ModoRondas.DOUBLE_DOWN) {
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            int objetivo =
+                    objetivosJugadores[jugadorActual];
+
+            if (objetivo
+                    >= OBJETIVO_FINALIZADO_AROUND_CLOCK) {
+
+                return "FINALIZADO";
+            }
+
+            if (objetivo
+                    == OBJETIVO_DIANA_AROUND_CLOCK) {
+
+                return "DIANA";
+            }
+
+            return String.valueOf(objetivo);
+        }
+
+        if (modoRondas == ModoRondas.SHANGHAI) {
 
             if (esRondaDianaSecuencial()) {
                 return "DIANA";
@@ -1763,6 +2075,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
         historialEstados.push(
                 new EstadoPartida(
                         puntuacionesJugadores.clone(),
+                        objetivosJugadores.clone(),
+                        jugadoresFinalizados.clone(),
+                        new ArrayList<>(ordenFinalizacion),
                         jugadorActual,
                         rondaActual,
                         dardoActual,
@@ -1799,6 +2114,21 @@ public class PartidaRondasActivity extends AppCompatActivity {
                 estadoAnterior
                         .puntuacionesJugadores
                         .clone();
+
+        objetivosJugadores =
+                estadoAnterior
+                        .objetivosJugadores
+                        .clone();
+
+        jugadoresFinalizados =
+                estadoAnterior
+                        .jugadoresFinalizados
+                        .clone();
+
+        ordenFinalizacion.clear();
+        ordenFinalizacion.addAll(
+                estadoAnterior.ordenFinalizacion
+        );
 
         jugadorActual =
                 estadoAnterior.jugadorActual;
@@ -1897,11 +2227,20 @@ public class PartidaRondasActivity extends AppCompatActivity {
              i < nombresJugadores.length;
              i++) {
 
-            txtPuntuacionesJugadores[i].setText(
-                    String.valueOf(
-                            puntuacionesJugadores[i]
-                    )
-            );
+            if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+                txtPuntuacionesJugadores[i].setText(
+                        obtenerTextoObjetivoJugador(i)
+                );
+
+            } else {
+
+                txtPuntuacionesJugadores[i].setText(
+                        String.valueOf(
+                                puntuacionesJugadores[i]
+                        )
+                );
+            }
 
             panelesJugadores[i].setAlpha(
                     i == jugadorActual
@@ -1915,6 +2254,33 @@ public class PartidaRondasActivity extends AppCompatActivity {
                             : Color.WHITE
             );
         }
+    }
+
+    private String obtenerTextoObjetivoJugador(
+            int indiceJugador) {
+
+        if (modoRondas != ModoRondas.AROUND_THE_CLOCK) {
+            return String.valueOf(
+                    puntuacionesJugadores[indiceJugador]
+            );
+        }
+
+        int objetivo =
+                objetivosJugadores[indiceJugador];
+
+        if (objetivo
+                >= OBJETIVO_FINALIZADO_AROUND_CLOCK) {
+
+            return "FIN";
+        }
+
+        if (objetivo
+                == OBJETIVO_DIANA_AROUND_CLOCK) {
+
+            return "DIANA";
+        }
+
+        return String.valueOf(objetivo);
     }
 
     private void actualizarJugadorActivo() {
@@ -1941,14 +2307,33 @@ public class PartidaRondasActivity extends AppCompatActivity {
                 colorActual
         );
 
-        txtPuntuacionJugadorActual.setText(
-                String.valueOf(
-                        obtenerPuntuacionProvisionalTurno()
-                )
-        );
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            txtPuntuacionJugadorActual.setText(
+                    obtenerTextoObjetivoJugador(
+                            jugadorActual
+                    )
+            );
+
+        } else {
+
+            txtPuntuacionJugadorActual.setText(
+                    String.valueOf(
+                            obtenerPuntuacionProvisionalTurno()
+                    )
+            );
+        }
     }
 
     private int obtenerPuntuacionProvisionalTurno() {
+
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            return objetivosJugadores[jugadorActual]
+                    >= OBJETIVO_FINALIZADO_AROUND_CLOCK
+                    ? OBJETIVO_DIANA_AROUND_CLOCK
+                    : objetivosJugadores[jugadorActual];
+        }
 
         int puntuacionActual =
                 puntuacionesJugadores[jugadorActual];
@@ -1968,9 +2353,16 @@ public class PartidaRondasActivity extends AppCompatActivity {
                 String.valueOf(rondaActual)
         );
 
-        txtMaxRondas.setText(
-                "/" + maxRondas
-        );
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            txtMaxRondas.setText("");
+
+        } else {
+
+            txtMaxRondas.setText(
+                    "/" + maxRondas
+            );
+        }
     }
 
     private void actualizarInformacionTurno() {
@@ -2439,17 +2831,54 @@ public class PartidaRondasActivity extends AppCompatActivity {
             clasificacion.add(i);
         }
 
-        /*
-         * Ambos modos se clasifican de mayor a menor puntuación.
-         * ArrayList.sort conserva el orden original en caso de empate.
-         */
-        clasificacion.sort(
-                (indice1, indice2) ->
-                        Integer.compare(
-                                puntuacionesJugadores[indice2],
-                                puntuacionesJugadores[indice1]
-                        )
-        );
+        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+            clasificacion.clear();
+
+            for (Integer indice :
+                    ordenFinalizacion) {
+
+                if (indice != null
+                        && indice >= 0
+                        && indice < nombresJugadores.length
+                        && !clasificacion.contains(indice)) {
+
+                    clasificacion.add(indice);
+                }
+            }
+
+            ArrayList<Integer> restantes =
+                    new ArrayList<>();
+
+            for (int i = 0;
+                 i < nombresJugadores.length;
+                 i++) {
+
+                if (!clasificacion.contains(i)) {
+                    restantes.add(i);
+                }
+            }
+
+            restantes.sort(
+                    (indice1, indice2) ->
+                            Integer.compare(
+                                    objetivosJugadores[indice2],
+                                    objetivosJugadores[indice1]
+                            )
+            );
+
+            clasificacion.addAll(restantes);
+
+        } else {
+
+            clasificacion.sort(
+                    (indice1, indice2) ->
+                            Integer.compare(
+                                    puntuacionesJugadores[indice2],
+                                    puntuacionesJugadores[indice1]
+                            )
+            );
+        }
 
         return clasificacion;
     }
@@ -2485,9 +2914,18 @@ public class PartidaRondasActivity extends AppCompatActivity {
                     nombresJugadores[indiceJugador]
             );
 
-            puntuacionesOrdenadas.add(
-                    puntuacionesJugadores[indiceJugador]
-            );
+            if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+
+                puntuacionesOrdenadas.add(
+                        objetivosJugadores[indiceJugador]
+                );
+
+            } else {
+
+                puntuacionesOrdenadas.add(
+                        puntuacionesJugadores[indiceJugador]
+                );
+            }
 
             coloresOrdenados.add(
                     coloresRecursosJugadores[indiceJugador]
@@ -2534,7 +2972,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         intent.putExtra(
                 ResultadoActivity.EXTRA_RONDAS_JUGADAS,
-                maxRondas
+                rondaActual
         );
 
         intent.putExtra(
@@ -2655,6 +3093,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
     private static class EstadoPartida {
 
         private final int[] puntuacionesJugadores;
+        private final int[] objetivosJugadores;
+        private final boolean[] jugadoresFinalizados;
+        private final ArrayList<Integer> ordenFinalizacion;
 
         private final int jugadorActual;
         private final int rondaActual;
@@ -2667,6 +3108,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         private EstadoPartida(
                 int[] puntuacionesJugadores,
+                int[] objetivosJugadores,
+                boolean[] jugadoresFinalizados,
+                ArrayList<Integer> ordenFinalizacion,
                 int jugadorActual,
                 int rondaActual,
                 int dardoActual,
@@ -2676,6 +3120,15 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
             this.puntuacionesJugadores =
                     puntuacionesJugadores;
+
+            this.objetivosJugadores =
+                    objetivosJugadores;
+
+            this.jugadoresFinalizados =
+                    jugadoresFinalizados;
+
+            this.ordenFinalizacion =
+                    ordenFinalizacion;
 
             this.jugadorActual =
                     jugadorActual;

@@ -43,6 +43,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
     private LinearLayout contenedorAjustesAvanzados;
     private Switch switchCierreDoble;
+    private Switch switchMantenerMultiplicador;
     private Switch switchOrdenAleatorio;
     private Spinner spnNumeroDardos;
     private TextView txtTituloNumeroDardos;
@@ -68,6 +69,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
     public static final String EXTRA_NUMERO_DARDOS = "numeroDardos";
     public static final String EXTRA_CIERRE_DOBLE = "cierreDoble";
+    public static final String EXTRA_MANTENER_MULTIPLICADOR = "mantenerMultiplicador";
     public static final String EXTRA_ORDEN_ALEATORIO = "ordenAleatorio";
 
     // SharedPreferences: última configuración ----------------------------------
@@ -82,6 +84,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private static final String PREF_MODO = "modo_default";
     private static final String PREF_DARDOS = "dardos_default";
     private static final String PREF_CIERRE_DOBLE = "cierre_doble_default";
+    private static final String PREF_MANTENER_MULTIPLICADOR = "mantener_multiplicador";
     private static final String PREF_ORDEN_ALEATORIO = "orden_aleatorio_default";
 
     // Configuración base --------------------------------------------------------
@@ -169,6 +172,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
         contenedorAjustesAvanzados = findViewById(R.id.contenedorAjustesAvanzados);
         switchCierreDoble = findViewById(R.id.switchCierreDoble);
+        switchMantenerMultiplicador = findViewById(R.id.switchMantenerMultiplicador);
         switchOrdenAleatorio = findViewById(R.id.switchOrdenAleatorio);
         spnNumeroDardos = findViewById(R.id.spnNumeroDardos);
         txtTituloNumeroDardos = findViewById(R.id.txtTituloNumeroDardos);
@@ -298,6 +302,8 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         spnNumeroDardos.setSelection(dardos - 1);
 
         switchCierreDoble.setChecked(spAjustes.getBoolean(PREF_CIERRE_DOBLE, false));
+        switchMantenerMultiplicador.setChecked(
+                spAjustes.getBoolean(PREF_MANTENER_MULTIPLICADOR, false));
         switchOrdenAleatorio.setChecked(spAjustes.getBoolean(PREF_ORDEN_ALEATORIO, false));
 
         cargandoConfiguracion = false;
@@ -322,6 +328,10 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         boolean esPuntos = MODO_301.equals(modoJuego) || MODO_501.equals(modoJuego);
 
         switchCierreDoble.setVisibility(esPuntos ? View.VISIBLE : View.GONE);
+
+        boolean admiteMultiplicadorPersistente = esPuntos || esModoCricket(modoJuego);
+        switchMantenerMultiplicador.setVisibility(
+                admiteMultiplicadorPersistente ? View.VISIBLE : View.GONE);
 
         txtTituloNumeroDardos.setVisibility(View.VISIBLE);
         spnNumeroDardos.setVisibility(View.VISIBLE);
@@ -556,6 +566,10 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         editorUltimaPartida.putInt(EXTRA_NUMERO_JUGADORES, filasJugadores.size());
         editorUltimaPartida.putInt(EXTRA_NUMERO_DARDOS, obtenerNumeroDardosSeleccionado());
         editorUltimaPartida.putBoolean(EXTRA_CIERRE_DOBLE, switchCierreDoble.isChecked());
+        editorUltimaPartida.putBoolean(
+                EXTRA_MANTENER_MULTIPLICADOR,
+                switchMantenerMultiplicador.isChecked()
+        );
         editorUltimaPartida.putBoolean(EXTRA_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
 
         for (int i = 0; i < nombresSeleccionados.size(); i++) {
@@ -583,6 +597,12 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
         spnNumeroDardos.setSelection(dardosGuardados - 1);
         switchCierreDoble.setChecked(spUltimaPartida.getBoolean(EXTRA_CIERRE_DOBLE, false));
+        switchMantenerMultiplicador.setChecked(
+                spUltimaPartida.getBoolean(
+                        EXTRA_MANTENER_MULTIPLICADOR,
+                        spAjustes.getBoolean(PREF_MANTENER_MULTIPLICADOR, false)
+                )
+        );
         switchOrdenAleatorio.setChecked(spUltimaPartida.getBoolean(EXTRA_ORDEN_ALEATORIO, false));
 
         seleccionarModoJuegoEnSpinner(modoJuegoGuardado);
@@ -767,6 +787,10 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
         intent.putExtra(EXTRA_NUMERO_DARDOS, obtenerNumeroDardosSeleccionado());
         intent.putExtra(EXTRA_CIERRE_DOBLE, switchCierreDoble.isChecked());
+        intent.putExtra(
+                EXTRA_MANTENER_MULTIPLICADOR,
+                switchMantenerMultiplicador.isChecked()
+        );
         intent.putExtra(EXTRA_ORDEN_ALEATORIO, switchOrdenAleatorio.isChecked());
 
         for (int i = 0; i < nombresSeleccionados.size(); i++) {

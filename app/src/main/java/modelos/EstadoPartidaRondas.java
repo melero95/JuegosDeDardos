@@ -16,6 +16,9 @@ public class EstadoPartidaRondas {
     private ArrayList<Integer> coloresRecursosJugadores;
     private ArrayList<Integer> coloresJugadores;
     private ArrayList<Integer> puntuacionesJugadores;
+    private ArrayList<Integer> objetivosJugadores;
+    private ArrayList<Boolean> jugadoresFinalizados;
+    private ArrayList<Integer> ordenFinalizacion;
 
     //Estado del turno actual -----------------------------------------------------
 
@@ -36,6 +39,9 @@ public class EstadoPartidaRondas {
         coloresRecursosJugadores = new ArrayList<>();
         coloresJugadores = new ArrayList<>();
         puntuacionesJugadores = new ArrayList<>();
+        objetivosJugadores = new ArrayList<>();
+        jugadoresFinalizados = new ArrayList<>();
+        ordenFinalizacion = new ArrayList<>();
 
         textosDardos = new ArrayList<>();
         historialEstados = new ArrayList<>();
@@ -111,6 +117,37 @@ public class EstadoPartidaRondas {
                 puntuacionesJugadores;
     }
 
+
+    public ArrayList<Integer> getObjetivosJugadores() {
+        return objetivosJugadores;
+    }
+
+    public void setObjetivosJugadores(
+            ArrayList<Integer> objetivosJugadores
+    ) {
+        this.objetivosJugadores = objetivosJugadores;
+    }
+
+    public ArrayList<Boolean> getJugadoresFinalizados() {
+        return jugadoresFinalizados;
+    }
+
+    public void setJugadoresFinalizados(
+            ArrayList<Boolean> jugadoresFinalizados
+    ) {
+        this.jugadoresFinalizados = jugadoresFinalizados;
+    }
+
+    public ArrayList<Integer> getOrdenFinalizacion() {
+        return ordenFinalizacion;
+    }
+
+    public void setOrdenFinalizacion(
+            ArrayList<Integer> ordenFinalizacion
+    ) {
+        this.ordenFinalizacion = ordenFinalizacion;
+    }
+
     public int getDardoActual() {
         return dardoActual;
     }
@@ -166,6 +203,9 @@ public class EstadoPartidaRondas {
     public static class EstadoDeshacerRondas {
 
         private ArrayList<Integer> puntuacionesJugadores;
+        private ArrayList<Integer> objetivosJugadores;
+        private ArrayList<Boolean> jugadoresFinalizados;
+        private ArrayList<Integer> ordenFinalizacion;
 
         private int jugadorActual;
         private int rondaActual;
@@ -179,6 +219,9 @@ public class EstadoPartidaRondas {
         public EstadoDeshacerRondas() {
 
             puntuacionesJugadores = new ArrayList<>();
+            objetivosJugadores = new ArrayList<>();
+            jugadoresFinalizados = new ArrayList<>();
+            ordenFinalizacion = new ArrayList<>();
             textosDardos = new ArrayList<>();
         }
 
@@ -191,6 +234,37 @@ public class EstadoPartidaRondas {
         ) {
             this.puntuacionesJugadores =
                     puntuacionesJugadores;
+        }
+
+
+        public ArrayList<Integer> getObjetivosJugadores() {
+            return objetivosJugadores;
+        }
+
+        public void setObjetivosJugadores(
+                ArrayList<Integer> objetivosJugadores
+        ) {
+            this.objetivosJugadores = objetivosJugadores;
+        }
+
+        public ArrayList<Boolean> getJugadoresFinalizados() {
+            return jugadoresFinalizados;
+        }
+
+        public void setJugadoresFinalizados(
+                ArrayList<Boolean> jugadoresFinalizados
+        ) {
+            this.jugadoresFinalizados = jugadoresFinalizados;
+        }
+
+        public ArrayList<Integer> getOrdenFinalizacion() {
+            return ordenFinalizacion;
+        }
+
+        public void setOrdenFinalizacion(
+                ArrayList<Integer> ordenFinalizacion
+        ) {
+            this.ordenFinalizacion = ordenFinalizacion;
         }
 
         public int getJugadorActual() {

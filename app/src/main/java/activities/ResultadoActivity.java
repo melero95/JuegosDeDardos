@@ -771,6 +771,26 @@ public class ResultadoActivity extends AppCompatActivity {
                 coloresRevancha
         );
 
+        /*
+         * También enviamos nombres y colores mediante extras individuales.
+         * De esta forma, las Activities antiguas y las nuevas pueden
+         * reconstruir la revancha sin depender de un único formato.
+         */
+        for (int i = 0;
+             i < nombresRevancha.size();
+             i++) {
+
+            intentRevancha.putExtra(
+                    PartidaCriquetActivity.EXTRA_JUGADOR + (i + 1),
+                    nombresRevancha.get(i)
+            );
+
+            intentRevancha.putExtra(
+                    PartidaCriquetActivity.EXTRA_COLOR_JUGADOR + (i + 1),
+                    coloresRevancha.get(i)
+            );
+        }
+
         startActivity(intentRevancha);
         finish();
     }

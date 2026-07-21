@@ -3,6 +3,7 @@ package activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -75,6 +76,10 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private static final int CAPACIDAD_MAX_DARDOS = 4;
     private static final String PREF_CONFIG_PARTIDA = "configuracion_dardos_partida";
     private static final String CLAVE_DARDOS_CRIQUET = "numero_dardos_criquet";
+    private static final String CLAVE_ORDEN_ALEATORIO_CRIQUET =
+            "orden_aleatorio_criquet";
+    private static final String CLAVE_MANTENER_MULTIPLICADOR_CRIQUET =
+            "mantener_multiplicador_criquet";
     private static final int MARCAS_PARA_CERRAR = 3;
 
     /*
@@ -107,6 +112,8 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private String modoJuego;
     private int maxRondas;
     private int numeroDardosTurno = 3;
+    private boolean ordenAleatorio;
+    private boolean mantenerMultiplicador;
 
     private String[] nombresJugadores;
     private int[] coloresJugadores;
@@ -349,6 +356,18 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                         )
                 );
 
+        ordenAleatorio =
+                intent.getBooleanExtra(
+                        ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO,
+                        false
+                );
+
+        mantenerMultiplicador =
+                intent.getBooleanExtra(
+                        ConfigurarNuevaPartidaActivity.EXTRA_MANTENER_MULTIPLICADOR,
+                        false
+                );
+
         if (modoJuego == null || modoJuego.trim().isEmpty()) {
             modoJuego = "Cricket";
         }
@@ -459,6 +478,11 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                 R.color.jugador_morado
         };
 
+        ArrayList<Integer> coloresRecibidos =
+                intent.getIntegerArrayListExtra(
+                        EXTRA_COLOR_JUGADOR
+                );
+
         coloresJugadores =
                 new int[nombresJugadores.length];
 
@@ -466,24 +490,93 @@ public class PartidaCriquetActivity extends AppCompatActivity {
              i < nombresJugadores.length;
              i++) {
 
-            /*
-             * ConfigurarNuevaPartidaActivity guarda en cada extra
-             * un ID de recurso, por ejemplo R.color.jugador_rojo.
-             */
-            int recursoColor =
-                    intent.getIntExtra(
-                            EXTRA_COLOR_JUGADOR + (i + 1),
+            int colorPorDefecto =
+                    ContextCompat.getColor(
+                            this,
                             coloresPorDefecto[
                                     i % coloresPorDefecto.length
                                     ]
                     );
 
-            coloresJugadores[i] =
-                    ContextCompat.getColor(
-                            this,
-                            recursoColor
-                    );
+            Integer colorRecibido = null;
+
+            /*
+             * Primera opción: lista enviada por
+             * ConfigurarNuevaPartidaActivity o ResultadoActivity.
+             */
+            if (coloresRecibidos != null
+                    && i < coloresRecibidos.size()) {
+
+                colorRecibido =
+                        coloresRecibidos.get(i);
+            }
+
+            /*
+             * Segunda opción: extras individuales
+             * colorJugador1, colorJugador2, etc.
+             */
+            String claveColorIndividual =
+                    EXTRA_COLOR_JUGADOR + (i + 1);
+
+            if (colorRecibido == null
+                    && intent.hasExtra(claveColorIndividual)) {
+
+                colorRecibido =
+                        intent.getIntExtra(
+                                claveColorIndividual,
+                                coloresPorDefecto[
+                                        i % coloresPorDefecto.length
+                                        ]
+                        );
+            }
+
+            if (colorRecibido == null) {
+
+                coloresJugadores[i] =
+                        colorPorDefecto;
+
+            } else {
+
+                coloresJugadores[i] =
+                        resolverColorRecibido(
+                                colorRecibido,
+                                colorPorDefecto
+                        );
+            }
         }
+    }
+
+    private int resolverColorRecibido(
+            int valorRecibido,
+            int colorPorDefecto) {
+
+        try {
+
+            String tipoRecurso =
+                    getResources()
+                            .getResourceTypeName(valorRecibido);
+
+            if ("color".equals(tipoRecurso)) {
+
+                return ContextCompat.getColor(
+                        this,
+                        valorRecibido
+                );
+            }
+
+        } catch (Resources.NotFoundException ignored) {
+
+            /*
+             * No es un ID de recurso.
+             * Se considera un color ARGB directo.
+             */
+        }
+
+        if (valorRecibido == 0) {
+            return colorPorDefecto;
+        }
+
+        return valorRecibido;
     }
 
     private ModoCriquet interpretarModoJuego(String modoRecibido) {
@@ -648,6 +741,14 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                         CLAVE_DARDOS_CRIQUET,
                         numeroDardosTurno
                 )
+                .putBoolean(
+                        CLAVE_ORDEN_ALEATORIO_CRIQUET,
+                        ordenAleatorio
+                )
+                .putBoolean(
+                        CLAVE_MANTENER_MULTIPLICADOR_CRIQUET,
+                        mantenerMultiplicador
+                )
                 .apply();
 
         GestorPartidaEnCurso.guardarPartida(
@@ -733,6 +834,24 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                                 CAPACIDAD_MAX_DARDOS,
                                 numeroDardosTurno
                         )
+                );
+
+        ordenAleatorio =
+                getSharedPreferences(
+                        PREF_CONFIG_PARTIDA,
+                        MODE_PRIVATE
+                ).getBoolean(
+                        CLAVE_ORDEN_ALEATORIO_CRIQUET,
+                        false
+                );
+
+        mantenerMultiplicador =
+                getSharedPreferences(
+                        PREF_CONFIG_PARTIDA,
+                        MODE_PRIVATE
+                ).getBoolean(
+                        CLAVE_MANTENER_MULTIPLICADOR_CRIQUET,
+                        false
                 );
 
         numeroDardo =
@@ -1367,7 +1486,9 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                         multiplicadorSeleccionado
                 );
 
-        multiplicadorSeleccionado = 1;
+        if (!mantenerMultiplicador) {
+            multiplicadorSeleccionado = 1;
+        }
 
         /*
          * Se comprueba después de cada dardo y antes de cambiar de turno.
@@ -2307,8 +2428,10 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                 ResultadoActivity.class
         );
 
-        intent.putExtra(ResultadoActivity.EXTRA_ORDEN_ALEATORIO,
-                getIntent().getBooleanExtra(ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false));
+        intent.putExtra(
+                ResultadoActivity.EXTRA_ORDEN_ALEATORIO,
+                ordenAleatorio
+        );
 
         // Datos generales de la partida
         intent.putExtra(

@@ -76,6 +76,9 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
     private static final int CAPACIDAD_MAX_DARDOS = 4;
     private static final int MAX_JUGADORES = 6;
+    private static final String PREF_CONFIG_PARTIDA = "configuracion_dardos_partida";
+    private static final String CLAVE_MANTENER_MULTIPLICADOR_PUNTOS =
+            "mantener_multiplicador_puntos";
 
     //Configuración de la partida -------------------------------------------------
 
@@ -86,6 +89,7 @@ public class PartidaPuntosActivity extends AppCompatActivity {
     private int maxRondas;
     private int numeroDardosTurno = 3;
     private boolean cierreDoble;
+    private boolean mantenerMultiplicador;
     private boolean ordenAleatorio;
 
     private ArrayList<String> nombresJugadores;
@@ -394,6 +398,10 @@ public class PartidaPuntosActivity extends AppCompatActivity {
                 ConfigurarNuevaPartidaActivity.EXTRA_NUMERO_DARDOS, 3)));
         cierreDoble = getIntent().getBooleanExtra(
                 ConfigurarNuevaPartidaActivity.EXTRA_CIERRE_DOBLE, false);
+        mantenerMultiplicador = getIntent().getBooleanExtra(
+                ConfigurarNuevaPartidaActivity.EXTRA_MANTENER_MULTIPLICADOR,
+                false
+        );
         ordenAleatorio = getIntent().getBooleanExtra(
                 ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false);
         actualizarVisibilidadDardos();
@@ -534,6 +542,16 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         partida.setEstadoPuntos(estado);
 
+        getSharedPreferences(
+                PREF_CONFIG_PARTIDA,
+                MODE_PRIVATE
+        ).edit()
+                .putBoolean(
+                        CLAVE_MANTENER_MULTIPLICADOR_PUNTOS,
+                        mantenerMultiplicador
+                )
+                .apply();
+
         GestorPartidaEnCurso.guardarPartida(
                 this,
                 partida
@@ -607,6 +625,13 @@ public class PartidaPuntosActivity extends AppCompatActivity {
 
         numeroDardosTurno = Math.max(1, Math.min(4, estado.getNumeroDardosTurno()));
         cierreDoble = estado.isCierreDoble();
+        mantenerMultiplicador = getSharedPreferences(
+                PREF_CONFIG_PARTIDA,
+                MODE_PRIVATE
+        ).getBoolean(
+                CLAVE_MANTENER_MULTIPLICADOR_PUNTOS,
+                false
+        );
         ordenAleatorio = estado.isOrdenAleatorio();
         actualizarVisibilidadDardos();
 
@@ -1417,7 +1442,9 @@ public class PartidaPuntosActivity extends AppCompatActivity {
         puntosTurnoActual += puntos;
         dardoActual++;
 
-        grupoMultiplicadores.check(R.id.radioX1);
+        if (!mantenerMultiplicador) {
+            grupoMultiplicadores.check(R.id.radioX1);
+        }
 
         actualizarInformacionTurno();
         actualizarEstadoBotones();
@@ -1555,7 +1582,9 @@ public class PartidaPuntosActivity extends AppCompatActivity {
             );
         }
 
-        grupoMultiplicadores.check(R.id.radioX1);
+        if (!mantenerMultiplicador) {
+            grupoMultiplicadores.check(R.id.radioX1);
+        }
 
         actualizarInterfazCompleta();
         guardarPartidaEnCurso();
