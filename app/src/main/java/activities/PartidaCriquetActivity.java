@@ -1,6 +1,7 @@
 package activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -71,7 +72,9 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private static final int MIN_JUGADORES = 2;
     private static final int MAX_JUGADORES = 6;
 
-    private static final int DARDOS_POR_TURNO = 3;
+    private static final int CAPACIDAD_MAX_DARDOS = 4;
+    private static final String PREF_CONFIG_PARTIDA = "configuracion_dardos_partida";
+    private static final String CLAVE_DARDOS_CRIQUET = "numero_dardos_criquet";
     private static final int MARCAS_PARA_CERRAR = 3;
 
     /*
@@ -103,6 +106,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
     private String modoJuego;
     private int maxRondas;
+    private int numeroDardosTurno = 3;
 
     private String[] nombresJugadores;
     private int[] coloresJugadores;
@@ -119,7 +123,8 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private boolean partidaFinalizada;
     private boolean partidaCargadaCorrectamente;
 
-    private final String[] tiradasTurno = {"", "", ""};
+    private final String[] tiradasTurno =
+            new String[CAPACIDAD_MAX_DARDOS];
 
     /*
      * Se guarda el estado anterior a cada dardo y a cada cambio manual.
@@ -141,10 +146,12 @@ public class PartidaCriquetActivity extends AppCompatActivity {
     private TextView txtTirada1;
     private TextView txtTirada2;
     private TextView txtTirada3;
+    private TextView txtTirada4;
 
     private ImageView imgDardo1;
     private ImageView imgDardo2;
     private ImageView imgDardo3;
+    private ImageView imgDardo4;
 
     // Marcador dinámico --------------------------------------------------------
 
@@ -253,10 +260,12 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         txtTirada1 = findViewById(R.id.txtTirada1);
         txtTirada2 = findViewById(R.id.txtTirada2);
         txtTirada3 = findViewById(R.id.txtTirada3);
+        txtTirada4 = findViewById(R.id.txtTirada4);
 
         imgDardo1 = findViewById(R.id.imgDardo1);
         imgDardo2 = findViewById(R.id.imgDardo2);
         imgDardo3 = findViewById(R.id.imgDardo3);
+        imgDardo4 = findViewById(R.id.imgDardo4);
 
         contenedorJugadoresIzquierda =
                 findViewById(R.id.contenedorJugadoresIzquierda);
@@ -327,6 +336,18 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
         maxRondas =
                 intent.getIntExtra(EXTRA_MAX_RONDAS, 15);
+
+        numeroDardosTurno =
+                Math.max(
+                        1,
+                        Math.min(
+                                CAPACIDAD_MAX_DARDOS,
+                                intent.getIntExtra(
+                                        ConfigurarNuevaPartidaActivity.EXTRA_NUMERO_DARDOS,
+                                        3
+                                )
+                        )
+                );
 
         if (modoJuego == null || modoJuego.trim().isEmpty()) {
             modoJuego = "Cricket";
@@ -619,6 +640,16 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
         partida.setEstadoCriquet(estado);
 
+        getSharedPreferences(
+                PREF_CONFIG_PARTIDA,
+                MODE_PRIVATE
+        ).edit()
+                .putInt(
+                        CLAVE_DARDOS_CRIQUET,
+                        numeroDardosTurno
+                )
+                .apply();
+
         GestorPartidaEnCurso.guardarPartida(
                 this,
                 partida
@@ -686,12 +717,30 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                         partida.getRondaActual()
                 );
 
+        numeroDardosTurno =
+                getSharedPreferences(
+                        PREF_CONFIG_PARTIDA,
+                        MODE_PRIVATE
+                ).getInt(
+                        CLAVE_DARDOS_CRIQUET,
+                        3
+                );
+
+        numeroDardosTurno =
+                Math.max(
+                        1,
+                        Math.min(
+                                CAPACIDAD_MAX_DARDOS,
+                                numeroDardosTurno
+                        )
+                );
+
         numeroDardo =
                 Math.max(
                         1,
                         Math.min(
                                 estado.getNumeroDardo(),
-                                DARDOS_POR_TURNO
+                                numeroDardosTurno
                         )
                 );
 
@@ -865,7 +914,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
                             guardado.getMultiplicadorSeleccionado(),
                             convertirListaAArrayString(
                                     guardado.getTiradasTurno(),
-                                    DARDOS_POR_TURNO
+                                    CAPACIDAD_MAX_DARDOS
                             )
                     )
             );
@@ -1347,7 +1396,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
         return !partidaFinalizada
                 && numeroDardo >= 1
-                && numeroDardo <= DARDOS_POR_TURNO;
+                && numeroDardo <= numeroDardosTurno;
     }
 
     private String crearTextoTirada(
@@ -1366,7 +1415,7 @@ public class PartidaCriquetActivity extends AppCompatActivity {
 
     private void finalizarRegistroDardo() {
 
-        if (numeroDardo < DARDOS_POR_TURNO) {
+        if (numeroDardo < numeroDardosTurno) {
 
             numeroDardo++;
             actualizarInterfazCompleta();
@@ -1792,12 +1841,15 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         }
 
         txtNumeroDardo.setText(
-                numeroDardo + " / " + DARDOS_POR_TURNO
+                numeroDardo + " / " + numeroDardosTurno
         );
 
         txtTirada1.setText(tiradasTurno[0]);
         txtTirada2.setText(tiradasTurno[1]);
         txtTirada3.setText(tiradasTurno[2]);
+        txtTirada4.setText(tiradasTurno[3]);
+
+        actualizarVisibilidadDardos();
     }
 
     private void actualizarMarcador() {
@@ -1972,28 +2024,70 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         );
     }
 
+    private void actualizarVisibilidadDardos() {
+
+        imgDardo1.setVisibility(View.VISIBLE);
+        txtTirada1.setVisibility(View.VISIBLE);
+
+        boolean mostrarDardo2 = numeroDardosTurno >= 2;
+        boolean mostrarDardo3 = numeroDardosTurno >= 3;
+        boolean mostrarDardo4 = numeroDardosTurno >= 4;
+
+        imgDardo2.setVisibility(
+                mostrarDardo2 ? View.VISIBLE : View.GONE
+        );
+        txtTirada2.setVisibility(
+                mostrarDardo2 ? View.VISIBLE : View.GONE
+        );
+
+        imgDardo3.setVisibility(
+                mostrarDardo3 ? View.VISIBLE : View.GONE
+        );
+        txtTirada3.setVisibility(
+                mostrarDardo3 ? View.VISIBLE : View.GONE
+        );
+
+        imgDardo4.setVisibility(
+                mostrarDardo4 ? View.VISIBLE : View.GONE
+        );
+        txtTirada4.setVisibility(
+                mostrarDardo4 ? View.VISIBLE : View.GONE
+        );
+    }
+
     private void actualizarDardosVisuales() {
 
-        int dardosRegistrados =
-                numeroDardo - 1;
+        actualizarVisibilidadDardos();
+
+        int dardoActualVisual =
+                Math.max(
+                        0,
+                        numeroDardo - 1
+                );
 
         imgDardo1.setAlpha(
-                dardosRegistrados >= 1
-                        ? 0.35f
-                        : 1.0f
+                dardoActualVisual == 0 ? 1.0f : 0.35f
         );
 
         imgDardo2.setAlpha(
-                dardosRegistrados >= 2
-                        ? 0.35f
-                        : 1.0f
+                dardoActualVisual == 1 ? 1.0f : 0.35f
         );
 
         imgDardo3.setAlpha(
-                dardosRegistrados >= 3
-                        ? 0.35f
-                        : 1.0f
+                dardoActualVisual == 2 ? 1.0f : 0.35f
         );
+
+        imgDardo4.setAlpha(
+                dardoActualVisual == 3 ? 1.0f : 0.35f
+        );
+
+        if (numeroDardo > numeroDardosTurno) {
+
+            imgDardo1.setAlpha(1.0f);
+            imgDardo2.setAlpha(1.0f);
+            imgDardo3.setAlpha(1.0f);
+            imgDardo4.setAlpha(1.0f);
+        }
     }
 
     // Marcador emergente -------------------------------------------------------
@@ -2245,6 +2339,11 @@ public class PartidaCriquetActivity extends AppCompatActivity {
         intent.putExtra(
                 ResultadoActivity.EXTRA_NOMBRE_GANADOR,
                 nombreGanador
+        );
+
+        intent.putExtra(
+                ResultadoActivity.EXTRA_NUMERO_DARDOS,
+                numeroDardosTurno
         );
 
         // Datos ordenados de los jugadores

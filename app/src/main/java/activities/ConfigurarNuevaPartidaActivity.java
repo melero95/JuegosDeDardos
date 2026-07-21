@@ -55,6 +55,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private static final String MODO_CUT_THROAT = "Cut Throat Cricket";
     private static final String MODO_DOUBLE_DOWN = "Double Down";
     private static final String MODO_AROUND_CLOCK = "Around the Clock";
+    private static final String MODO_SHANGHAI = "Shanghai";
 
     // Extras de Intent ----------------------------------------------------------
 
@@ -88,6 +89,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     private static final int RONDAS_ESTANDAR = 15;
     private static final int RONDAS_DOUBLE_DOWN = 9;
     private static final int RONDAS_AROUND_CLOCK = 21;
+    private static final int RONDAS_SHANGHAI = 21;
 
     private int maxRondas = RONDAS_ESTANDAR;
     private boolean cargandoConfiguracion = false;
@@ -198,6 +200,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
         modosJuego.add(MODO_CUT_THROAT);
         modosJuego.add(MODO_DOUBLE_DOWN);
         modosJuego.add(MODO_AROUND_CLOCK);
+        modosJuego.add(MODO_SHANGHAI);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -328,6 +331,8 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
             bloquearRondas(RONDAS_DOUBLE_DOWN);
         } else if (MODO_AROUND_CLOCK.equals(modoJuego)) {
             bloquearRondas(RONDAS_AROUND_CLOCK);
+        } else if (MODO_SHANGHAI.equals(modoJuego)) {
+            bloquearRondas(RONDAS_SHANGHAI);
         } else {
             desbloquearRondas();
         }
@@ -345,7 +350,9 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
     }
 
     private boolean rondasEditablesParaModo(String modoJuego) {
-        return !MODO_DOUBLE_DOWN.equals(modoJuego) && !MODO_AROUND_CLOCK.equals(modoJuego);
+        return !MODO_DOUBLE_DOWN.equals(modoJuego)
+                && !MODO_AROUND_CLOCK.equals(modoJuego)
+                && !MODO_SHANGHAI.equals(modoJuego);
     }
 
     private boolean rondasBloqueadas() {
@@ -717,6 +724,7 @@ public class ConfigurarNuevaPartidaActivity extends AppCompatActivity {
 
             case MODO_DOUBLE_DOWN:
             case MODO_AROUND_CLOCK:
+            case MODO_SHANGHAI:
                 intent = new Intent(this, PartidaRondasActivity.class);
                 break;
         }

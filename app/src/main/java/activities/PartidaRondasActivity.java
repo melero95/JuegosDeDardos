@@ -1,6 +1,7 @@
 package activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -33,7 +34,12 @@ import java.util.Locale;
  *
  * - Around the Clock:
  *   Juega desde el número 1 hasta el número configurado y termina con Diana.
- *   Simple = 1 punto, doble = 2 puntos y triple = 3 puntos.
+ *   Simple = 1 avance, doble = 2 avances y triple = 3 avances.
+ *
+ * - Shanghai:
+ *   Cada ronda tiene un único objetivo, desde el 1 hasta el 20 y Diana.
+ *   Solo puntúan los impactos en el objetivo de la ronda:
+ *   simple = valor del objetivo, doble = x2 y triple = x3.
  *
  * - Double Down:
  *   Siempre tiene 9 rondas:
@@ -61,7 +67,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
     // Constantes generales -----------------------------------------------------
 
     private static final int MAX_JUGADORES = 6;
-    private static final int DARDOS_POR_TURNO = 3;
+    private static final int CAPACIDAD_MAX_DARDOS = 4;
+    private static final String PREF_CONFIG_PARTIDA = "configuracion_dardos_partida";
+    private static final String CLAVE_DARDOS_RONDAS = "numero_dardos_rondas";
 
     private static final int PUNTUACION_INICIAL_DOUBLE_DOWN = 50;
     private static final int RONDAS_DOUBLE_DOWN = 9;
@@ -111,6 +119,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private enum ModoRondas {
         AROUND_THE_CLOCK,
+        SHANGHAI,
         DOUBLE_DOWN
     }
 
@@ -129,6 +138,8 @@ public class PartidaRondasActivity extends AppCompatActivity {
      */
     private int ultimoNumeroAroundClock;
     private int maxRondas;
+    private int numeroDardosTurno = 3;
+    private boolean ordenAleatorio;
 
     private String[] nombresJugadores;
 
@@ -157,7 +168,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
     private boolean animacionCambioTurnoActiva;
 
     private final String[] textosDardos =
-            new String[DARDOS_POR_TURNO];
+            new String[CAPACIDAD_MAX_DARDOS];
 
     /*
      * Guarda el estado anterior a cada dardo y a cada cambio manual de turno.
@@ -178,10 +189,12 @@ public class PartidaRondasActivity extends AppCompatActivity {
     private TextView txtTiradaDardo1;
     private TextView txtTiradaDardo2;
     private TextView txtTiradaDardo3;
+    private TextView txtTiradaDardo4;
 
     private ImageView imgDardo1;
     private ImageView imgDardo2;
     private ImageView imgDardo3;
+    private ImageView imgDardo4;
 
     private TextView txtObjetivoRonda;
 
@@ -301,10 +314,12 @@ public class PartidaRondasActivity extends AppCompatActivity {
         txtTiradaDardo1 = findViewById(R.id.txtTiradaDardo1);
         txtTiradaDardo2 = findViewById(R.id.txtTiradaDardo2);
         txtTiradaDardo3 = findViewById(R.id.txtTiradaDardo3);
+        txtTiradaDardo4 = findViewById(R.id.txtTiradaDardo4);
 
         imgDardo1 = findViewById(R.id.imgDardo1);
         imgDardo2 = findViewById(R.id.imgDardo2);
         imgDardo3 = findViewById(R.id.imgDardo3);
+        imgDardo4 = findViewById(R.id.imgDardo4);
 
         txtObjetivoRonda = findViewById(R.id.txtObjetivoRonda);
 
@@ -412,6 +427,23 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         recibirNombresJugadores(intent);
         recibirColoresJugadores(intent);
+
+        numeroDardosTurno = Math.max(
+                1,
+                Math.min(
+                        CAPACIDAD_MAX_DARDOS,
+                        intent.getIntExtra(
+                                ConfigurarNuevaPartidaActivity.EXTRA_NUMERO_DARDOS,
+                                3
+                        )
+                )
+        );
+
+        ordenAleatorio = intent.getBooleanExtra(
+                ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO,
+                false
+        );
+
         configurarNumeroRondas(intent);
     }
 
@@ -426,6 +458,10 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         if (modoNormalizado.contains("DOUBLE")) {
             return ModoRondas.DOUBLE_DOWN;
+        }
+
+        if (modoNormalizado.contains("SHANGHAI")) {
+            return ModoRondas.SHANGHAI;
         }
 
         return ModoRondas.AROUND_THE_CLOCK;
@@ -675,6 +711,8 @@ public class PartidaRondasActivity extends AppCompatActivity {
         );
 
         estado.setMaxRondas(maxRondas);
+        estado.setNumeroDardosTurno(numeroDardosTurno);
+        estado.setOrdenAleatorio(ordenAleatorio);
 
         estado.setColoresRecursosJugadores(
                 convertirArrayIntALista(
@@ -717,6 +755,16 @@ public class PartidaRondasActivity extends AppCompatActivity {
         );
 
         partida.setEstadoRondas(estado);
+
+        getSharedPreferences(
+                PREF_CONFIG_PARTIDA,
+                MODE_PRIVATE
+        ).edit()
+                .putInt(
+                        CLAVE_DARDOS_RONDAS,
+                        numeroDardosTurno
+                )
+                .apply();
 
         GestorPartidaEnCurso.guardarPartida(
                 this,
@@ -815,12 +863,39 @@ public class PartidaRondasActivity extends AppCompatActivity {
                         )
                 );
 
+        int dardosGuardados =
+                estado.getNumeroDardosTurno();
+
+        if (dardosGuardados <= 0) {
+
+            dardosGuardados =
+                    getSharedPreferences(
+                            PREF_CONFIG_PARTIDA,
+                            MODE_PRIVATE
+                    ).getInt(
+                            CLAVE_DARDOS_RONDAS,
+                            3
+                    );
+        }
+
+        numeroDardosTurno =
+                Math.max(
+                        1,
+                        Math.min(
+                                CAPACIDAD_MAX_DARDOS,
+                                dardosGuardados
+                        )
+                );
+
+        ordenAleatorio =
+                estado.isOrdenAleatorio();
+
         dardoActual =
                 Math.max(
                         0,
                         Math.min(
                                 estado.getDardoActual(),
-                                DARDOS_POR_TURNO
+                                numeroDardosTurno
                         )
                 );
 
@@ -1010,7 +1085,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
                             guardado.isHaAcertadoObjetivoTurno(),
                             convertirListaAArrayString(
                                     guardado.getTextosDardos(),
-                                    DARDOS_POR_TURNO
+                                    CAPACIDAD_MAX_DARDOS
                             )
                     )
             );
@@ -1224,7 +1299,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
         if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
 
-            if (esRondaDianaAroundClock()) {
+            if (esRondaDianaSecuencial()) {
 
                 puntosValidos =
                         multiplicador;
@@ -1241,6 +1316,36 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
                 puntosValidos =
                         multiplicador;
+
+                texto =
+                        crearTextoMultiplicador(
+                                numeroObjetivo,
+                                multiplicador
+                        );
+            }
+
+        } else if (modoRondas == ModoRondas.SHANGHAI) {
+
+            if (esRondaDianaSecuencial()) {
+
+                puntosValidos =
+                        multiplicador == 1
+                                ? 25
+                                : 50;
+
+                texto =
+                        multiplicador == 1
+                                ? "BULL"
+                                : "D-BULL";
+
+            } else {
+
+                int numeroObjetivo =
+                        rondaActual;
+
+                puntosValidos =
+                        numeroObjetivo
+                                * multiplicador;
 
                 texto =
                         crearTextoMultiplicador(
@@ -1386,11 +1491,11 @@ public class PartidaRondasActivity extends AppCompatActivity {
             return false;
         }
 
-        if (dardoActual >= DARDOS_POR_TURNO) {
+        if (dardoActual >= numeroDardosTurno) {
 
             Toast.makeText(
                     this,
-                    "Ya se han lanzado los tres dardos",
+                    "Ya se han lanzado todos los dardos del turno",
                     Toast.LENGTH_SHORT
             ).show();
 
@@ -1407,7 +1512,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
         actualizarInterfazCompleta();
         guardarPartidaEnCurso();
 
-        if (dardoActual >= DARDOS_POR_TURNO) {
+        if (dardoActual >= numeroDardosTurno) {
 
             finalizarTurnoConAnimacion();
         }
@@ -1561,9 +1666,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private TipoObjetivo obtenerTipoObjetivoActual() {
 
-        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+        if (modoRondas != ModoRondas.DOUBLE_DOWN) {
 
-            return esRondaDianaAroundClock()
+            return esRondaDianaSecuencial()
                     ? TipoObjetivo.BULL
                     : TipoObjetivo.NUMERO;
         }
@@ -1582,9 +1687,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private int obtenerValorObjetivoActual() {
 
-        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+        if (modoRondas != ModoRondas.DOUBLE_DOWN) {
 
-            return esRondaDianaAroundClock()
+            return esRondaDianaSecuencial()
                     ? 25
                     : rondaActual;
         }
@@ -1603,9 +1708,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private String obtenerTextoObjetivoActual() {
 
-        if (modoRondas == ModoRondas.AROUND_THE_CLOCK) {
+        if (modoRondas != ModoRondas.DOUBLE_DOWN) {
 
-            if (esRondaDianaAroundClock()) {
+            if (esRondaDianaSecuencial()) {
                 return "DIANA";
             }
 
@@ -1624,9 +1729,9 @@ public class PartidaRondasActivity extends AppCompatActivity {
         return ETIQUETAS_DOUBLE_DOWN[indice];
     }
 
-    private boolean esRondaDianaAroundClock() {
+    private boolean esRondaDianaSecuencial() {
 
-        return modoRondas == ModoRondas.AROUND_THE_CLOCK
+        return modoRondas != ModoRondas.DOUBLE_DOWN
                 && rondaActual == maxRondas;
     }
 
@@ -1750,6 +1855,10 @@ public class PartidaRondasActivity extends AppCompatActivity {
             return "DOUBLE DOWN";
         }
 
+        if (modoRondas == ModoRondas.SHANGHAI) {
+            return "SHANGHAI";
+        }
+
         return "AROUND THE CLOCK";
     }
 
@@ -1866,54 +1975,90 @@ public class PartidaRondasActivity extends AppCompatActivity {
 
     private void actualizarInformacionTurno() {
 
-        txtTiradaDardo1.setText(
-                textosDardos[0]
-        );
-
-        txtTiradaDardo2.setText(
-                textosDardos[1]
-        );
-
-        txtTiradaDardo3.setText(
-                textosDardos[2]
-        );
+        txtTiradaDardo1.setText(textosDardos[0]);
+        txtTiradaDardo2.setText(textosDardos[1]);
+        txtTiradaDardo3.setText(textosDardos[2]);
+        txtTiradaDardo4.setText(textosDardos[3]);
 
         int numeroDardoMostrado =
                 Math.min(
                         dardoActual + 1,
-                        DARDOS_POR_TURNO
+                        numeroDardosTurno
                 );
 
         txtNumeroDardos.setText(
                 numeroDardoMostrado
                         + " / "
-                        + DARDOS_POR_TURNO
+                        + numeroDardosTurno
         );
 
+        actualizarVisibilidadDardos();
+
         imgDardo1.setAlpha(
-                dardoActual == 0
-                        ? 1.0f
-                        : 0.35f
+                dardoActual == 0 ? 1.0f : 0.35f
         );
 
         imgDardo2.setAlpha(
-                dardoActual == 1
-                        ? 1.0f
-                        : 0.35f
+                dardoActual == 1 ? 1.0f : 0.35f
         );
 
         imgDardo3.setAlpha(
-                dardoActual == 2
-                        ? 1.0f
-                        : 0.35f
+                dardoActual == 2 ? 1.0f : 0.35f
         );
 
-        if (dardoActual >= DARDOS_POR_TURNO) {
+        imgDardo4.setAlpha(
+                dardoActual == 3 ? 1.0f : 0.35f
+        );
+
+        if (dardoActual >= numeroDardosTurno) {
 
             imgDardo1.setAlpha(1.0f);
             imgDardo2.setAlpha(1.0f);
             imgDardo3.setAlpha(1.0f);
+            imgDardo4.setAlpha(1.0f);
         }
+    }
+
+    private void actualizarVisibilidadDardos() {
+
+        imgDardo1.setVisibility(View.VISIBLE);
+        txtTiradaDardo1.setVisibility(View.VISIBLE);
+
+        imgDardo2.setVisibility(
+                numeroDardosTurno >= 2
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+
+        txtTiradaDardo2.setVisibility(
+                numeroDardosTurno >= 2
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+
+        imgDardo3.setVisibility(
+                numeroDardosTurno >= 3
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+
+        txtTiradaDardo3.setVisibility(
+                numeroDardosTurno >= 3
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+
+        imgDardo4.setVisibility(
+                numeroDardosTurno >= 4
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+
+        txtTiradaDardo4.setVisibility(
+                numeroDardosTurno >= 4
+                        ? View.VISIBLE
+                        : View.GONE
+        );
     }
 
     private void actualizarObjetivoRonda() {
@@ -2165,7 +2310,7 @@ public class PartidaRondasActivity extends AppCompatActivity {
         }
 
         boolean puedeLanzar =
-                dardoActual < DARDOS_POR_TURNO;
+                dardoActual < numeroDardosTurno;
 
         btnFueraRonda.setEnabled(puedeLanzar);
         btnSimpleRonda.setEnabled(puedeLanzar);
@@ -2367,8 +2512,10 @@ public class PartidaRondasActivity extends AppCompatActivity {
                 ResultadoActivity.class
         );
 
-        intent.putExtra(ResultadoActivity.EXTRA_ORDEN_ALEATORIO,
-                getIntent().getBooleanExtra(ConfigurarNuevaPartidaActivity.EXTRA_ORDEN_ALEATORIO, false));
+        intent.putExtra(
+                ResultadoActivity.EXTRA_ORDEN_ALEATORIO,
+                ordenAleatorio
+        );
 
         intent.putExtra(
                 ResultadoActivity.EXTRA_MODO_JUEGO,
@@ -2398,6 +2545,11 @@ public class PartidaRondasActivity extends AppCompatActivity {
         intent.putExtra(
                 ResultadoActivity.EXTRA_NOMBRE_GANADOR,
                 nombreGanador
+        );
+
+        intent.putExtra(
+                ResultadoActivity.EXTRA_NUMERO_DARDOS,
+                numeroDardosTurno
         );
 
         intent.putStringArrayListExtra(

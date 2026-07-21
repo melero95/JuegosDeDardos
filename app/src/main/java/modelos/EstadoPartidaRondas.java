@@ -8,6 +8,8 @@ public class EstadoPartidaRondas {
 
     private int ultimoNumeroAroundClock;
     private int maxRondas;
+    private int numeroDardosTurno;
+    private boolean ordenAleatorio;
 
     //Estado general --------------------------------------------------------------
 
@@ -59,6 +61,23 @@ public class EstadoPartidaRondas {
     public void setMaxRondas(int maxRondas) {
         this.maxRondas = maxRondas;
     }
+
+    public int getNumeroDardosTurno() {
+        return numeroDardosTurno;
+    }
+
+    public void setNumeroDardosTurno(int numeroDardosTurno) {
+        this.numeroDardosTurno = numeroDardosTurno;
+    }
+
+    public boolean isOrdenAleatorio() {
+        return ordenAleatorio;
+    }
+
+    public void setOrdenAleatorio(boolean ordenAleatorio) {
+        this.ordenAleatorio = ordenAleatorio;
+    }
+
 
     public ArrayList<Integer> getColoresRecursosJugadores() {
         return coloresRecursosJugadores;

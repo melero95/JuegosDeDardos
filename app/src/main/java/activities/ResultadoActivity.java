@@ -802,7 +802,8 @@ public class ResultadoActivity extends AppCompatActivity {
 
         if (modo.equalsIgnoreCase("Double Down") ||
                 modo.equalsIgnoreCase("Around the Clock") ||
-                modo.equalsIgnoreCase("Round the Clock")) {
+                modo.equalsIgnoreCase("Round the Clock") ||
+                modo.equalsIgnoreCase("Shanghai")) {
 
             return new Intent(
                     ResultadoActivity.this,
